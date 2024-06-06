@@ -1,0 +1,20 @@
+[package]
+name = "adapter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+defmt = "0.3.8"
+defmt-rtt = "0.4.1"
+fdcan = { version = "0.2.0", features = ["fdcan_g0_g4_l5"] }
+panic-probe = { version = "0.3.2", features = ["print-defmt"] }
+rtic = { version = "2.1.1", features = ["thumbv7-backend"] }
+rtic-monotonics = { version = "1.5.0", features = [
+    "cortex-m-systick",
+    "systick-64bit",
+    "systick-10khz",
+] }
+rtic-sync = "1.3.0"
+stm32g4xx-hal = { git = "https://github.com/stm32-rs/stm32g4xx-hal.git", version = "0.0.2", features = [
+    "stm32g474",
+] }

@@ -8,12 +8,12 @@ version = "0.1.0"
 dependencies = [
  "defmt",
  "defmt-rtt",
- "fdcan 0.2.0",
+ "fdcan",
  "panic-probe",
  "rtic",
  "rtic-monotonics",
  "rtic-sync",
- "stm32g4xx-hal",
+ "stm32g0xx-hal",
 ]
 
 [[package]]
@@ -31,7 +31,7 @@ version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5deb64efa5bd81e31fcd1938615a6d98c82eafcbcd787162b6f63b91d6bac5b3"
 dependencies = [
- "rustc_version 0.2.3",
+ "rustc_version",
 ]
 
 [[package]]
@@ -57,15 +57,6 @@ name = "byteorder"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
-
-[[package]]
-name = "cast"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c24dab4283a142afa2fdca129b80ad2c6284e073930f964c3a1293c225ee39a"
-dependencies = [
- "rustc_version 0.4.0",
-]
 
 [[package]]
 name = "cfg-if"
@@ -155,15 +146,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "embedded-dma"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46c8c02e4347a0267ca60813c952017f4c5948c232474c6010a381a337f1bda4"
-dependencies = [
- "stable_deref_trait",
-]
-
-[[package]]
 name = "embedded-hal"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -207,22 +189,9 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
 name = "fdcan"
-version = "0.1.2"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5c0c327e4fb2d35445b850b4890bb5a1f14e78be0e1fd4ab3c5fa895819c465"
-dependencies = [
- "bitflags",
- "nb 1.1.0",
- "paste",
- "static_assertions",
- "vcell",
-]
-
-[[package]]
-name = "fdcan"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "553fb8420a8ca433ed032a3f284deeb95c12e4d3d25cdc15196669a27b2ae34b"
+checksum = "a745a7ef1532cc436619631a102c1d2f71e8fd4e82f1ee48c85eaa73c0487e81"
 dependencies = [
  "bitflags",
  "nb 1.1.0",
@@ -485,16 +454,7 @@ version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 dependencies = [
- "semver 0.9.0",
-]
-
-[[package]]
-name = "rustc_version"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
-dependencies = [
- "semver 1.0.23",
+ "semver",
 ]
 
 [[package]]
@@ -505,12 +465,6 @@ checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
 dependencies = [
  "semver-parser",
 ]
-
-[[package]]
-name = "semver"
-version = "1.0.23"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "semver-parser"
@@ -531,10 +485,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
-name = "stm32g4"
-version = "0.15.1"
+name = "stm32g0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0281f5c2376fe28b6fcef2e932e43f61ec9185144c3d5f77a13a37529d57a1ff"
+checksum = "dfc2ac544cea741c92a501bfd027d197354cd22ee92b439aea26d2ee0b55bcd7"
 dependencies = [
  "bare-metal 1.0.0",
  "cortex-m",
@@ -543,24 +497,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "stm32g4xx-hal"
-version = "0.0.2"
-source = "git+https://github.com/stm32-rs/stm32g4xx-hal.git#f8b6ff82d26d3a235d44cd0aa760cb3afd99ee35"
+name = "stm32g0xx-hal"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fae457e81f9601121c5b92dca20e3612c80ea957898f8e0e68efcaab6b242067"
 dependencies = [
- "bare-metal 0.2.5",
- "bitflags",
- "cast",
+ "bare-metal 1.0.0",
  "cortex-m",
- "embedded-dma",
  "embedded-hal 0.2.7",
- "fdcan 0.1.2",
  "fugit",
- "nb 0.1.3",
- "paste",
- "stable_deref_trait",
- "static_assertions",
- "stm32g4",
- "vcell",
+ "nb 1.1.0",
+ "stm32g0",
  "void",
 ]
 

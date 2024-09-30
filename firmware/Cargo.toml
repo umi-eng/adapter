@@ -1,5 +1,5 @@
 [package]
-name = "adapter"
+name = "umi-canfd-adapter"
 version = "0.1.0"
 edition = "2021"
 

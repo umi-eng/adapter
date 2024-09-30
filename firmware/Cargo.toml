@@ -16,3 +16,6 @@ rtic-monotonics = { version = "1.5.0", features = [
 ] }
 rtic-sync = "1.3.0"
 stm32g0xx-hal = { version = "0.2.0", features = ["stm32g081"] }
+
+[build-dependencies]
+chrono = "0.4.38"

@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "probe-rs-debug",
+      "request": "launch",
+      "name": "probe-rs Test",
+      "cwd": "${workspaceFolder}",
+      "connectUnderReset": true,
+      "chip": "STM32G474RETx",
+      "flashingConfig": {
+        "flashingEnabled": true,
+        "haltAfterReset": true
+      },
+      "coreConfigs": [
+        {
+          "coreIndex": 0,
+          "programBinary": "./target/thumbv7em-none-eabihf/debug/umi-canfd-adapter",
+          "svdFile": "./STM32G474.svd"
+        }
+      ]
+    }
+  ]
+}

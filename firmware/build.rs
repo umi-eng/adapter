@@ -1,5 +1,7 @@
 use chrono::{DateTime, SecondsFormat, Utc};
-use std::{fs::File, io::Write, path::PathBuf, process::Command, time::SystemTime};
+use std::{
+    fs::File, io::Write, path::PathBuf, process::Command, time::SystemTime,
+};
 
 fn main() {
     // put `memory.x` in our output directory and ensure it's on the linker
@@ -13,7 +15,7 @@ fn main() {
 
     let date_time: DateTime<Utc> = SystemTime::now().into();
     println!(
-        "cargo:rustc-env=PROJ_BUILT_AT={}",
+        "cargo:rustc-env=CRATE_BUILT_AT={}",
         date_time.to_rfc3339_opts(SecondsFormat::Secs, true)
     );
 
@@ -25,7 +27,7 @@ fn main() {
             .stdout,
     )
     .unwrap();
-    println!("cargo:rustc-env=PROJ_GIT_HASH={}", git_hash);
+    println!("cargo:rustc-env=CRATE_GIT_HASH={}", git_hash);
 
     // ensure the project is rebuilt when memory.x is changed.
     println!("cargo:rerun-if-changed=memory.x");

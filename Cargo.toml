@@ -1,3 +1,38 @@
-[workspace]
-resolver = "2"
-members = ["firmware"]
+[package]
+name = "umi-canfd-adapter"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["can1"]
+can1 = []
+can2 = []
+
+[dependencies]
+bitflags = "2.6.0"
+defmt = "0.3.8"
+defmt-rtt = "0.4.1"
+fdcan = { version = "0.2.0", features = ["fdcan_g0_g4_l5"] }
+panic-probe = { version = "0.3.2", features = ["print-defmt"] }
+rtic = { version = "2.1.1", features = ["thumbv7-backend"] }
+rtic-monotonics = { version = "2.0.2", features = [
+    "cortex-m-systick",
+    "systick-64bit",
+] }
+rtic-sync = "1.3.0"
+stm32g4xx-hal = { version = "0.0.2", features = [
+    "stm32g474",
+    "usb",
+], git = "https://github.com/umi-eng/stm32g4xx-hal/", branch = "feature/usb" }
+zerocopy = "0.7.35"
+tlvc = { git = "https://github.com/umi-eng/tlvc.git", rev = "27f0f4a", version = "0.3.1" }
+usb-device = { version = "0.3.2", features = ["defmt"] }
+usbd-gscan = { git = "https://github.com/umi-eng/usbd-gscan.git", version = "0.1.0", features = [
+    "defmt-03",
+] }
+usbd-dfu = "0.4.0"
+static_cell = "2.1.0"
+
+
+[build-dependencies]
+chrono = "0.4.38"

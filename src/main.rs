@@ -9,22 +9,20 @@ use panic_probe as _;
 use stm32g4xx_hal as hal;
 
 use core::num::{NonZeroU16, NonZeroU8};
-use fdcan::config::NominalBitTiming;
 use fdcan::{
+    config::NominalBitTiming,
     filter::{StandardFilter, StandardFilterSlot},
-    FdCan, NormalOperationMode,
 };
 use fugit::ExtU32;
 use hal::prelude::*;
 use hal::{
-    can::{Can, CanExt},
+    can::CanExt,
     gpio::{
         gpioa::{PA11, PA12},
         Speed,
     },
     independent_watchdog::IndependentWatchdog,
     pwr::PwrExt,
-    stm32::{FDCAN2, FDCAN3},
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
 };
@@ -41,8 +39,6 @@ defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
 
 #[rtic::app(device = stm32g4xx_hal::stm32, peripherals = true)]
 mod app {
-    use stm32g4xx_hal::flash::FlashExt;
-
     use super::*;
 
     type Usb = stm32g4xx_hal::usb::UsbBus<
@@ -54,9 +50,6 @@ mod app {
 
     #[shared]
     struct Shared {
-        fdcan2: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
-        fdcan3: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
-
         usb: &'static UsbBusAllocator<Usb>,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
@@ -154,7 +147,13 @@ mod app {
             }))
         };
 
-        let usb_can = GsCan::new(usb, can::UsbCanDevice);
+        let usb_can = GsCan::new(
+            usb,
+            can::UsbCanDevice {
+                can0: fdcan2,
+                can1: fdcan3,
+            },
+        );
 
         let usb_dfu = DFUClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
@@ -174,8 +173,6 @@ mod app {
 
         (
             Shared {
-                fdcan2,
-                fdcan3,
                 usb,
                 usb_dev,
                 usb_can,

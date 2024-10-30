@@ -1,10 +1,18 @@
+use crate::hal::{
+    can::Can,
+    stm32::{FDCAN2, FDCAN3},
+};
+use fdcan::FdCan;
+use fdcan::NormalOperationMode;
 use usbd_gscan::{
     host::{CanState, DeviceBitTiming, DeviceConfig, DeviceState},
     Device,
 };
 
-#[derive(Debug)]
-pub struct UsbCanDevice;
+pub struct UsbCanDevice {
+    pub can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
+    pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+}
 
 impl Device for UsbCanDevice {
     fn device_config(&self) -> DeviceConfig {

@@ -31,7 +31,7 @@ use usb_device::{
     bus::UsbBusAllocator,
     device::{StringDescriptors, UsbDevice, UsbDeviceBuilder},
 };
-use usbd_dfu::DFUClass;
+use usbd_dfu::DfuClass;
 use usbd_gscan::GsCan;
 
 systick_monotonic!(Mono, 1_000);
@@ -53,7 +53,7 @@ mod app {
         usb: &'static UsbBusAllocator<Usb>,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
-        usb_dfu: DFUClass<Usb, dfu::DfuFlash>,
+        usb_dfu: DfuClass<Usb, dfu::DfuFlash>,
     }
 
     #[local]
@@ -147,15 +147,8 @@ mod app {
             }))
         };
 
-        let usb_can = GsCan::new(
-            usb,
-            can::UsbCanDevice {
-                can0: fdcan2,
-                can1: fdcan3,
-            },
-        );
-
-        let usb_dfu = DFUClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
+        let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
+        let usb_can = GsCan::new(usb, can::UsbCanDevice::new(fdcan2, fdcan3));
 
         let usb_dev =
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::CANDLELIGHT)

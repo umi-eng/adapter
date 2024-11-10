@@ -12,6 +12,22 @@ use usbd_gscan::{
 pub struct UsbCanDevice {
     pub can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
     pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+    can0_enabled: bool,
+    can1_enabled: bool,
+}
+
+impl UsbCanDevice {
+    pub fn new(
+        can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
+        can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+    ) -> Self {
+        Self {
+            can0,
+            can1,
+            can0_enabled: false,
+            can1_enabled: false,
+        }
+    }
 }
 
 impl Device for UsbCanDevice {
@@ -24,11 +40,19 @@ impl Device for UsbCanDevice {
     }
 
     fn reset(&mut self, interface: u16) {
-        defmt::info!("Host requested reset for interface {}", interface);
+        match interface {
+            0 => self.can0_enabled = false,
+            1 => self.can1_enabled = false,
+            _ => defmt::error!("Interface {} not in use", interface),
+        }
     }
 
     fn start(&mut self, interface: u16) {
-        defmt::info!("Host requested start for interface {}", interface);
+        match interface {
+            0 => self.can0_enabled = true,
+            1 => self.can1_enabled = true,
+            _ => defmt::error!("Interface {} not in use", interface),
+        }
     }
 
     fn state(&self) -> usbd_gscan::host::DeviceState {

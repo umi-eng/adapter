@@ -147,8 +147,8 @@ mod app {
             }))
         };
 
-        let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
         let usb_can = GsCan::new(usb, can::UsbCanDevice::new(fdcan2, fdcan3));
+        let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
         let usb_dev =
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::CANDLELIGHT)

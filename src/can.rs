@@ -12,8 +12,6 @@ use usbd_gscan::{
 pub struct UsbCanDevice {
     pub can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
     pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
-    can0_enabled: bool,
-    can1_enabled: bool,
 }
 
 impl UsbCanDevice {
@@ -21,12 +19,7 @@ impl UsbCanDevice {
         can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
         can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
     ) -> Self {
-        Self {
-            can0,
-            can1,
-            can0_enabled: false,
-            can1_enabled: false,
-        }
+        Self { can0, can1 }
     }
 }
 
@@ -80,16 +73,40 @@ impl Device for UsbCanDevice {
 
     fn reset(&mut self, interface: u16) {
         match interface {
-            0 => self.can0_enabled = false,
-            1 => self.can1_enabled = false,
+            0 => {
+                if let Some(mut can) = self.can0.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, false);
+                    can.enable_interrupt_line(InterruptLine::_1, false);
+                    self.can0.replace(can);
+                }
+            }
+            1 => {
+                if let Some(mut can) = self.can1.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, false);
+                    can.enable_interrupt_line(InterruptLine::_1, false);
+                    self.can1.replace(can);
+                }
+            }
             _ => defmt::error!("Interface {} not in use", interface),
         }
     }
 
     fn start(&mut self, interface: u16) {
         match interface {
-            0 => self.can0_enabled = true,
-            1 => self.can1_enabled = true,
+            0 => {
+                if let Some(mut can) = self.can0.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, true);
+                    can.enable_interrupt_line(InterruptLine::_1, true);
+                    self.can0.replace(can);
+                }
+            }
+            1 => {
+                if let Some(mut can) = self.can1.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, true);
+                    can.enable_interrupt_line(InterruptLine::_1, true);
+                    self.can1.replace(can);
+                }
+            }
             _ => defmt::error!("Interface {} not in use", interface),
         }
     }

@@ -8,11 +8,11 @@ use defmt_rtt as _;
 use panic_probe as _;
 use stm32g4xx_hal as hal;
 
+use can::id_to_embedded;
 use core::num::{NonZeroU16, NonZeroU8};
-use fdcan::{
-    config::NominalBitTiming,
-    filter::{StandardFilter, StandardFilterSlot},
-};
+use embedded_can::Frame;
+use fdcan::config::Interrupt;
+use fdcan::config::NominalBitTiming;
 use fugit::ExtU32;
 use hal::prelude::*;
 use hal::{
@@ -106,9 +106,8 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
-            can.set_standard_filter(
-                StandardFilterSlot::_0,
-                StandardFilter::accept_all_into_fifo0(),
+            can.enable_interrupts(
+                Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );
 
             Some(can.into_normal())
@@ -125,9 +124,8 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
-            can.set_standard_filter(
-                StandardFilterSlot::_0,
-                StandardFilter::accept_all_into_fifo0(),
+            can.enable_interrupts(
+                Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );
 
             Some(can.into_normal())

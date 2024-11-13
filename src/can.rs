@@ -118,4 +118,27 @@ impl Device for UsbCanDevice {
             rx_errors: 0,
         }
     }
+
+/// Convert fdcan id type to embedded-hal id type.
+pub fn id_to_embedded(id: fdcan::id::Id) -> embedded_can::Id {
+    match id {
+        fdcan::id::Id::Extended(id) => {
+            Id::Extended(embedded_can::ExtendedId::new(id.as_raw()).unwrap())
+        }
+        fdcan::id::Id::Standard(id) => {
+            Id::Standard(embedded_can::StandardId::new(id.as_raw()).unwrap())
+        }
+    }
+}
+
+/// Convert embedded-hal id type to fdcan id type.
+pub fn id_to_fdcan(id: embedded_can::Id) -> fdcan::id::Id {
+    match id {
+        Id::Extended(id) => fdcan::id::Id::Extended(
+            fdcan::id::ExtendedId::new(id.as_raw()).unwrap(),
+        ),
+        Id::Standard(id) => fdcan::id::Id::Standard(
+            fdcan::id::StandardId::new(id.as_raw()).unwrap(),
+        ),
+    }
 }

@@ -7,7 +7,7 @@
       "name": "probe-rs Test",
       "cwd": "${workspaceFolder}",
       "connectUnderReset": true,
-      "chip": "STM32G474RETx",
+      "chip": "STM32G474CBUx",
       "flashingConfig": {
         "flashingEnabled": true,
         "haltAfterReset": true

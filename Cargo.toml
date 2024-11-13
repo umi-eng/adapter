@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["can1"]
+default = ["can1", "can2"]
 can1 = []
 can2 = []
 

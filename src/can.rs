@@ -2,10 +2,15 @@ use crate::hal::{
     can::Can,
     stm32::{FDCAN2, FDCAN3},
 };
-use fdcan::FdCan;
-use fdcan::NormalOperationMode;
+use core::num::{NonZeroU16, NonZeroU8};
+use embedded_can::{Frame as _, Id};
+use fdcan::{
+    config::{DataBitTiming, InterruptLine, NominalBitTiming},
+    FdCan,
+};
+use fdcan::{frame::TxFrameHeader, NormalOperationMode};
 use usbd_gscan::{
-    host::{CanState, DeviceBitTiming, DeviceConfig, DeviceState},
+    host::{CanState, DeviceBitTiming, DeviceConfig, DeviceState, FrameFlag},
     Device,
 };
 
@@ -118,6 +123,37 @@ impl Device for UsbCanDevice {
             rx_errors: 0,
         }
     }
+
+    fn receive(&mut self, interface: u16, frame: usbd_gscan::host::Frame) {
+        let frame_format = if frame.flags.intersects(FrameFlag::FD) {
+            fdcan::frame::FrameFormat::Fdcan
+        } else {
+            fdcan::frame::FrameFormat::Standard
+        };
+
+        let header = TxFrameHeader {
+            len: frame.dlc() as u8,
+            frame_format,
+            id: id_to_fdcan(frame.id()),
+            bit_rate_switching: false,
+            marker: None,
+        };
+
+        match interface {
+            0 => {
+                if let Some(can) = &mut self.can0 {
+                    can.transmit(header, frame.data()).unwrap();
+                }
+            }
+            1 => {
+                if let Some(can) = &mut self.can1 {
+                    can.transmit(header, frame.data()).unwrap();
+                }
+            }
+            _ => defmt::error!("Interface {} not in use", interface),
+        }
+    }
+}
 
 /// Convert fdcan id type to embedded-hal id type.
 pub fn id_to_embedded(id: fdcan::id::Id) -> embedded_can::Id {

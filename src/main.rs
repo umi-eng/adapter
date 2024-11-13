@@ -104,6 +104,7 @@ mod app {
             let mut can = cx.device.FDCAN2.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
+            can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
             can.set_standard_filter(
                 StandardFilterSlot::_0,
@@ -122,6 +123,7 @@ mod app {
             let mut can = cx.device.FDCAN3.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
+            can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
             can.set_standard_filter(
                 StandardFilterSlot::_0,

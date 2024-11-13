@@ -772,6 +772,7 @@ dependencies = [
  "chrono",
  "defmt",
  "defmt-rtt",
+ "embedded-can",
  "fdcan",
  "panic-probe",
  "rtic",

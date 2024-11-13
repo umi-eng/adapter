@@ -32,6 +32,7 @@ usbd-gscan = { git = "https://github.com/umi-eng/usbd-gscan.git", version = "0.1
 ] }
 usbd-dfu = "0.4.0"
 static_cell = "2.1.0"
+embedded-can = "0.4.1"
 
 [build-dependencies]
 chrono = "0.4.38"

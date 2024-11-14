@@ -261,4 +261,60 @@ mod app {
             }
         });
     }
+
+    #[task(binds = FDCAN3_INTR0, shared = [usb_dev, usb_can])]
+    fn fdcan3_it0(cx: fdcan3_it0::Context) {
+        defmt::trace!("Interrupt 0.");
+
+        (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
+            if let Some(can) = &mut usb_can.device.can1 {
+                let mut data = [0; 64];
+                let header = can.receive0(&mut data).unwrap().unwrap();
+                let len = header.len as usize;
+
+                let id = id_to_embedded(header.id);
+
+                let frame = if header.rtr {
+                    usbd_gscan::host::Frame::new_remote(id, len)
+                } else {
+                    usbd_gscan::host::Frame::new(id, &data[..len])
+                };
+
+                can.clear_interrupt(Interrupt::RxFifo0NewMsg);
+
+                if let Some(frame) = frame {
+                    usb_can.transmit(1, &frame);
+                    usb_dev.poll(&mut [usb_can]);
+                }
+            }
+        });
+    }
+
+    #[task(binds = FDCAN3_INTR1, shared = [usb_dev, usb_can])]
+    fn fdcan3_it1(cx: fdcan3_it1::Context) {
+        defmt::trace!("Interrupt 1.");
+
+        (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
+            if let Some(can) = &mut usb_can.device.can1 {
+                let mut data = [0; 64];
+                let header = can.receive1(&mut data).unwrap().unwrap();
+                let len = header.len as usize;
+
+                let id = id_to_embedded(header.id);
+
+                let frame = if header.rtr {
+                    usbd_gscan::host::Frame::new_remote(id, len)
+                } else {
+                    usbd_gscan::host::Frame::new(id, &data[..len])
+                };
+
+                can.clear_interrupt(Interrupt::RxFifo1NewMsg);
+
+                if let Some(frame) = frame {
+                    usb_can.transmit(1, &frame);
+                    usb_dev.poll(&mut [usb_can]);
+                }
+            }
+        });
+    }
 }

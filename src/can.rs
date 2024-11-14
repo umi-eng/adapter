@@ -36,19 +36,45 @@ impl Device for UsbCanDevice {
         DeviceConfig::new(2)
     }
 
-    fn device_bit_timing(&mut self, interface: u16, timing: DeviceBitTiming) {
-        defmt::info!("Host requested bit timing change: {:?}", timing);
-
+    fn device_bit_timing(&mut self, interface: u8, timing: DeviceBitTiming) {
         let seg1 = timing.prop_seg + timing.phase_seg1;
 
-        let nominal_btr = NominalBitTiming {
+        let btr = NominalBitTiming {
             prescaler: NonZeroU16::new(timing.brp as u16).unwrap(),
             seg1: NonZeroU8::new(seg1 as u8).unwrap(),
             seg2: NonZeroU8::new(timing.phase_seg2 as u8).unwrap(),
             sync_jump_width: NonZeroU8::new(timing.sjw as u8).unwrap(),
         };
 
-        let data_btr = DataBitTiming {
+        match interface {
+            0 => {
+                if let Some(can) = self.can0.take() {
+                    let mut config = can.into_config_mode();
+                    config.set_nominal_bit_timing(btr);
+                    self.can0.replace(config.into_normal());
+                }
+            }
+            1 => {
+                if let Some(can) = self.can1.take() {
+                    let mut config = can.into_config_mode();
+                    config.set_nominal_bit_timing(btr);
+                    self.can1.replace(config.into_normal());
+                }
+            }
+            _ => {
+                defmt::error!("Interface number {} not in use", interface);
+            }
+        }
+    }
+
+    fn device_bit_timing_data(
+        &mut self,
+        interface: u8,
+        timing: DeviceBitTiming,
+    ) {
+        let seg1 = timing.prop_seg + timing.phase_seg1;
+
+        let btr = DataBitTiming {
             transceiver_delay_compensation: false,
             prescaler: NonZeroU8::new(timing.brp as u8).unwrap(),
             seg1: NonZeroU8::new(seg1 as u8).unwrap(),
@@ -60,16 +86,14 @@ impl Device for UsbCanDevice {
             0 => {
                 if let Some(can) = self.can0.take() {
                     let mut config = can.into_config_mode();
-                    config.set_nominal_bit_timing(nominal_btr);
-                    config.set_data_bit_timing(data_btr);
+                    config.set_data_bit_timing(btr);
                     self.can0.replace(config.into_normal());
                 }
             }
             1 => {
                 if let Some(can) = self.can1.take() {
                     let mut config = can.into_config_mode();
-                    config.set_nominal_bit_timing(nominal_btr);
-                    config.set_data_bit_timing(data_btr);
+                    config.set_data_bit_timing(btr);
                     self.can1.replace(config.into_normal());
                 }
             }

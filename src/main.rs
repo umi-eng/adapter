@@ -49,7 +49,7 @@ mod app {
 
     #[shared]
     struct Shared {
-        usb: &'static UsbBusAllocator<Usb>,
+        _usb: &'static UsbBusAllocator<Usb>,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
         usb_dfu: DfuClass<Usb, dfu::DfuFlash>,
@@ -165,7 +165,7 @@ mod app {
 
         (
             Shared {
-                usb,
+                _usb: usb,
                 usb_dev,
                 usb_can,
                 usb_dfu,

@@ -21,10 +21,13 @@ pub struct UsbCanDevice {
 
 impl UsbCanDevice {
     pub fn new(
-        can0: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
-        can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+        can0: FdCan<Can<FDCAN2>, NormalOperationMode>,
+        can1: FdCan<Can<FDCAN3>, NormalOperationMode>,
     ) -> Self {
-        Self { can0, can1 }
+        Self {
+            can0: Some(can0),
+            can1: Some(can1),
+        }
     }
 }
 

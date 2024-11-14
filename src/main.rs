@@ -96,7 +96,7 @@ mod app {
             sync_jump_width: NonZeroU8::new(1).unwrap(),
         };
 
-        let fdcan2 = if cfg!(feature = "can1") {
+        let fdcan2 = {
             let rx = gpiob.pb5.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb6.into_alternate().set_speed(Speed::VeryHigh);
 
@@ -109,12 +109,10 @@ mod app {
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );
 
-            Some(can.into_normal())
-        } else {
-            None
+            can.into_normal()
         };
 
-        let fdcan3 = if cfg!(feature = "can2") {
+        let fdcan3 = {
             let rx = gpiob.pb3.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb4.into_alternate().set_speed(Speed::VeryHigh);
 
@@ -127,9 +125,7 @@ mod app {
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );
 
-            Some(can.into_normal())
-        } else {
-            None
+            can.into_normal()
         };
 
         let usb = {

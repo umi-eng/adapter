@@ -3,11 +3,6 @@ name = "umi-canfd-adapter"
 version = "0.1.0"
 edition = "2021"
 
-[features]
-default = ["can1", "can2"]
-can1 = []
-can2 = []
-
 [dependencies]
 bitflags = "2.6.0"
 defmt = "0.3.8"

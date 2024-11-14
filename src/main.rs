@@ -11,8 +11,7 @@ use stm32g4xx_hal as hal;
 use can::id_to_embedded;
 use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::Frame;
-use fdcan::config::Interrupt;
-use fdcan::config::NominalBitTiming;
+use fdcan::config::{Interrupt, Interrupts, NominalBitTiming};
 use fugit::ExtU32;
 use hal::prelude::*;
 use hal::{

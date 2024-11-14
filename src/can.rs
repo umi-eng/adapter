@@ -103,7 +103,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn reset(&mut self, interface: u16) {
+    fn reset(&mut self, interface: u8) {
         match interface {
             0 => {
                 if let Some(mut can) = self.can0.take() {
@@ -123,7 +123,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn start(&mut self, interface: u16) {
+    fn start(&mut self, interface: u8) {
         match interface {
             0 => {
                 if let Some(mut can) = self.can0.take() {
@@ -143,7 +143,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn state(&self, interface: u16) -> usbd_gscan::host::DeviceState {
+    fn state(&self, interface: u8) -> usbd_gscan::host::DeviceState {
         defmt::info!("Interface number: {}", interface);
 
         let counters = match interface {
@@ -164,7 +164,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn receive(&mut self, interface: u16, frame: usbd_gscan::host::Frame) {
+    fn receive(&mut self, interface: u8, frame: usbd_gscan::host::Frame) {
         let frame_format = if frame.flags.intersects(FrameFlag::FD) {
             fdcan::frame::FrameFormat::Fdcan
         } else {

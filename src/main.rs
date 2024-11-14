@@ -13,7 +13,6 @@ use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::Frame;
 use fdcan::config::{Interrupt, Interrupts, NominalBitTiming};
 use fugit::ExtU32;
-use hal::prelude::*;
 use hal::{
     can::CanExt,
     gpio::{
@@ -21,6 +20,7 @@ use hal::{
         Speed,
     },
     independent_watchdog::IndependentWatchdog,
+    prelude::*,
     pwr::PwrExt,
     time::RateExtU32,
     usb::{Peripheral, UsbBus},

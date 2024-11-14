@@ -6,7 +6,7 @@ use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::{Frame as _, Id};
 use fdcan::{
     config::{DataBitTiming, InterruptLine, NominalBitTiming},
-    FdCan,
+    FdCan, ReceiveErrorOverflow,
 };
 use fdcan::{frame::TxFrameHeader, NormalOperationMode};
 use usbd_gscan::{
@@ -116,11 +116,24 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn state(&self) -> usbd_gscan::host::DeviceState {
+    fn state(&self, interface: u16) -> usbd_gscan::host::DeviceState {
+        defmt::info!("Interface number: {}", interface);
+
+        let counters = match interface {
+            0 => self.can0.as_ref().unwrap().error_counters(),
+            1 => self.can1.as_ref().unwrap().error_counters(),
+            _ => panic!("Interface {} not in use", interface),
+        };
+
+        let rx_errors = match counters.receive_err {
+            ReceiveErrorOverflow::Normal(count) => count,
+            ReceiveErrorOverflow::Overflow(count) => count,
+        };
+
         DeviceState {
             state: CanState::Active,
-            tx_errors: 0,
-            rx_errors: 0,
+            tx_errors: counters.transmit_err as u32,
+            rx_errors: rx_errors as u32,
         }
     }
 

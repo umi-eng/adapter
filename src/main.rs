@@ -40,10 +40,10 @@ defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
 mod app {
     use super::*;
 
-    type Usb = stm32g4xx_hal::usb::UsbBus<
+    type Usb = hal::usb::UsbBus<
         Peripheral<
-            PA11<stm32g4xx_hal::gpio::Alternate<14>>,
-            PA12<stm32g4xx_hal::gpio::Alternate<14>>,
+            PA11<hal::gpio::Alternate<14>>,
+            PA12<hal::gpio::Alternate<14>>,
         >,
     >;
 

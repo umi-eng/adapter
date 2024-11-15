@@ -142,7 +142,7 @@ mod app {
             }))
         };
 
-        let usb_can = GsCan::new(usb, can::UsbCanDevice::new(fdcan2, fdcan3));
+        let usb_can = GsCan::new(usb, can::UsbCanDevice::new(fdcan3, fdcan2));
         let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
         let usb_dev =
@@ -207,7 +207,7 @@ mod app {
         defmt::trace!("Interrupt 0.");
 
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can0 {
+            if let Some(can) = &mut usb_can.device.can1 {
                 let mut data = [0; 64];
                 let header = can.receive0(&mut data).unwrap().unwrap();
                 let len = header.len as usize;
@@ -235,7 +235,7 @@ mod app {
         defmt::trace!("Interrupt 1.");
 
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can0 {
+            if let Some(can) = &mut usb_can.device.can1 {
                 let mut data = [0; 64];
                 let header = can.receive1(&mut data).unwrap().unwrap();
                 let len = header.len as usize;
@@ -263,7 +263,7 @@ mod app {
         defmt::trace!("Interrupt 0.");
 
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
+            if let Some(can) = &mut usb_can.device.can0 {
                 let mut data = [0; 64];
                 let header = can.receive0(&mut data).unwrap().unwrap();
                 let len = header.len as usize;
@@ -291,7 +291,7 @@ mod app {
         defmt::trace!("Interrupt 1.");
 
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
+            if let Some(can) = &mut usb_can.device.can0 {
                 let mut data = [0; 64];
                 let header = can.receive1(&mut data).unwrap().unwrap();
                 let len = header.len as usize;

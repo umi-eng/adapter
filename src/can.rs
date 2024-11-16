@@ -32,11 +32,11 @@ impl UsbCanDevice {
 }
 
 impl Device for UsbCanDevice {
-    fn device_config(&self) -> DeviceConfig {
+    fn config(&self) -> DeviceConfig {
         DeviceConfig::new(2)
     }
 
-    fn device_bit_timing(&mut self, interface: u8, timing: DeviceBitTiming) {
+    fn configure_bit_timing(&mut self, interface: u8, timing: DeviceBitTiming) {
         let seg1 = timing.prop_seg + timing.phase_seg1;
 
         let btr = NominalBitTiming {
@@ -67,7 +67,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn device_bit_timing_data(
+    fn configure_bit_timing_data(
         &mut self,
         interface: u8,
         timing: DeviceBitTiming,

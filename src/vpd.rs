@@ -1,7 +1,12 @@
 //! Vital product data.
 
 use bitflags::bitflags;
-use core::{convert::Infallible, io::BorrowedBuf, slice};
+use core::{
+    convert::Infallible,
+    fmt::{self, Formatter},
+    io::BorrowedBuf,
+    slice,
+};
 use defmt::Format;
 use tlvc::{ChunkHeader, TlvcReadError, TlvcReader};
 use zerocopy::{AsBytes, FromBytes, FromZeroes};
@@ -94,6 +99,12 @@ impl Serial {
 impl defmt::Format for Serial {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(fmt, "{:02}{:02}-{:04X}", self.year, self.week, self.seq)
+    }
+}
+
+impl core::fmt::Display for Serial {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:02}{:02}-{:04X}", self.year, self.week, self.seq)
     }
 }
 

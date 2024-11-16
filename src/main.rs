@@ -186,9 +186,9 @@ mod app {
                 .device_class(usbd_gscan::INTERFACE_CLASS)
                 .build();
 
-        defmt::info!("Config complete.");
-
         watchdog::spawn().unwrap();
+
+        defmt::info!("Init complete.");
 
         (
             Shared {

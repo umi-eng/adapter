@@ -52,7 +52,6 @@ mod app {
 
     #[shared]
     struct Shared {
-        _usb: &'static UsbBusAllocator<Usb>,
         vpd: vpd::VitalProductData,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
@@ -188,7 +187,6 @@ mod app {
 
         (
             Shared {
-                _usb: usb,
                 vpd,
                 usb_dev,
                 usb_can,

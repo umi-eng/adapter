@@ -171,12 +171,17 @@ mod app {
         );
         let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
+        static SERIAL: static_cell::StaticCell<heapless::String<9>> =
+            static_cell::StaticCell::new();
+        let serial = SERIAL.init(heapless::String::new());
+        core::fmt::write(serial, format_args!("{}", vpd.serial)).unwrap();
+
         let usb_dev =
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::CANDLELIGHT)
                 .strings(&[StringDescriptors::default()
                     .manufacturer("Universal Machine Intelligence")
                     .product("M.2 CAN FD Adapter")
-                    .serial_number("TBA")])
+                    .serial_number(serial.as_str())])
                 .unwrap()
                 .device_class(usbd_gscan::INTERFACE_CLASS)
                 .build();

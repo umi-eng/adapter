@@ -22,7 +22,7 @@ use hal::{
     independent_watchdog::IndependentWatchdog,
     prelude::*,
     pwr::PwrExt,
-    rcc::{PllConfig, PllMDiv, PllNMul, PllPDiv, PllQDiv, PllRDiv, Prescaler},
+    rcc::{PllConfig, PllMDiv, PllNMul, PllRDiv, Prescaler},
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
 };

@@ -83,7 +83,7 @@ mod app {
                     q: None,
                     r: Some(PllRDiv::DIV_2),
                 })
-                .ahb_psc(Prescaler::Div4),
+                .ahb_psc(Prescaler::Div2),
             pwr,
         );
         rcc.enable_hsi48();

@@ -1,8 +1,10 @@
 #![no_std]
 #![no_main]
+#![feature(core_io_borrowed_buf)]
 
 mod can;
 mod dfu;
+mod vpd;
 
 use defmt_rtt as _;
 use panic_probe as _;

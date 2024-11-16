@@ -79,8 +79,8 @@ mod app {
                     mux: stm32g4xx_hal::rcc::PllSrc::HSE(24.MHz()),
                     m: PllMDiv::DIV_1,
                     n: PllNMul::MUL_10,
-                    p: Some(PllPDiv::DIV_2),
-                    q: Some(PllQDiv::DIV_2),
+                    p: None,
+                    q: None,
                     r: Some(PllRDiv::DIV_2),
                 })
                 .ahb_psc(Prescaler::Div4),

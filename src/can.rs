@@ -1,6 +1,7 @@
 use crate::hal::{
     can::Can,
     stm32::{FDCAN2, FDCAN3},
+    time::Hertz,
 };
 use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::{Frame as _, Id};
@@ -10,21 +11,49 @@ use fdcan::{
 };
 use fdcan::{frame::TxFrameHeader, NormalOperationMode};
 use usbd_gscan::{
-    host::{CanState, DeviceBitTiming, DeviceConfig, DeviceState, FrameFlag},
+    host::{
+        CanBitTimingConst, CanState, DeviceBitTiming, DeviceBitTimingConst,
+        DeviceBitTimingConstExtended, DeviceConfig, DeviceState, Feature,
+        FrameFlag,
+    },
     Device,
 };
 
+const TIMING_NOMINAL: CanBitTimingConst = CanBitTimingConst {
+    tseg1_min: 1,
+    tseg1_max: 255,
+    tseg2_min: 1,
+    tset2_max: 127,
+    sjw_max: 127,
+    brp_min: 1,
+    brp_max: 511,
+    brp_inc: 1,
+};
+const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
+    tseg1_min: 1,
+    tseg1_max: 31,
+    tseg2_min: 1,
+    tset2_max: 15,
+    sjw_max: 15,
+    brp_min: 1,
+    brp_max: 15,
+    brp_inc: 1,
+};
+
 pub struct UsbCanDevice {
+    clock: Hertz,
     pub can0: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
     pub can1: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
 }
 
 impl UsbCanDevice {
     pub fn new(
+        clock: Hertz,
         can0: FdCan<Can<FDCAN3>, NormalOperationMode>,
         can1: FdCan<Can<FDCAN2>, NormalOperationMode>,
     ) -> Self {
         Self {
+            clock,
             can0: Some(can0),
             can1: Some(can1),
         }
@@ -34,6 +63,23 @@ impl UsbCanDevice {
 impl Device for UsbCanDevice {
     fn config(&self) -> DeviceConfig {
         DeviceConfig::new(2)
+    }
+
+    fn bit_timing(&self) -> DeviceBitTimingConst {
+        DeviceBitTimingConst {
+            features: Feature::FD | Feature::BT_CONST_EXT,
+            fclk_can: self.clock.to_Hz(),
+            timing: TIMING_NOMINAL,
+        }
+    }
+
+    fn bit_timing_ext(&self) -> DeviceBitTimingConstExtended {
+        DeviceBitTimingConstExtended {
+            features: Feature::FD | Feature::BT_CONST_EXT,
+            fclk_can: self.clock.to_Hz(),
+            timing_nominal: TIMING_NOMINAL,
+            timing_data: TIMING_DATA,
+        }
     }
 
     fn configure_bit_timing(&mut self, interface: u8, timing: DeviceBitTiming) {

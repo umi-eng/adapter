@@ -142,7 +142,10 @@ mod app {
             }))
         };
 
-        let usb_can = GsCan::new(usb, can::UsbCanDevice::new(fdcan3, fdcan2));
+        let usb_can = GsCan::new(
+            usb,
+            can::UsbCanDevice::new(rcc.clocks.ahb_clk, fdcan3, fdcan2),
+        );
         let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
         let usb_dev =

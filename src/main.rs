@@ -53,6 +53,7 @@ mod app {
     #[shared]
     struct Shared {
         _usb: &'static UsbBusAllocator<Usb>,
+        vpd: vpd::VitalProductData,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
         usb_dfu: DfuClass<Usb, dfu::DfuFlash>,
@@ -96,6 +97,17 @@ mod app {
             let mut wd = IndependentWatchdog::new(cx.device.IWDG);
             wd.start(500_u32.millis());
             wd
+        };
+
+        let vpd = {
+            let data = vpd::VitalProductData {
+                serial: vpd::Serial::new(24, 01, 0001),
+                version: vpd::Version::new(0, 3, 1, 0),
+                sku: vpd::Sku::new(*b"M2FD"),
+                features: vpd::Features::empty(),
+            };
+
+            data
         };
 
         let gpioa = cx.device.GPIOA.split(&mut rcc);
@@ -177,6 +189,7 @@ mod app {
         (
             Shared {
                 _usb: usb,
+                vpd,
                 usb_dev,
                 usb_can,
                 usb_dfu,

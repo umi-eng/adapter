@@ -22,6 +22,7 @@ use hal::{
     independent_watchdog::IndependentWatchdog,
     prelude::*,
     pwr::PwrExt,
+    rcc::{PllConfig, PllMDiv, PllNMul, PllPDiv, PllQDiv, PllRDiv, Prescaler},
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
 };
@@ -73,7 +74,16 @@ mod app {
         let pwr = cx.device.PWR.constrain().freeze();
         let rcc = cx.device.RCC.constrain();
         let mut rcc = rcc.freeze(
-            hal::rcc::Config::new(hal::rcc::SysClockSrc::HSE(24.MHz())),
+            hal::rcc::Config::new(hal::rcc::SysClockSrc::PLL)
+                .pll_cfg(PllConfig {
+                    mux: stm32g4xx_hal::rcc::PllSrc::HSE(24.MHz()),
+                    m: PllMDiv::DIV_1,
+                    n: PllNMul::MUL_10,
+                    p: Some(PllPDiv::DIV_2),
+                    q: Some(PllQDiv::DIV_2),
+                    r: Some(PllRDiv::DIV_2),
+                })
+                .ahb_psc(Prescaler::Div4),
             pwr,
         );
         rcc.enable_hsi48();

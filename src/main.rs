@@ -34,7 +34,7 @@ use usb_device::{
 use usbd_dfu::DfuClass;
 use usbd_gscan::GsCan;
 
-systick_monotonic!(Mono, 1_000);
+systick_monotonic!(Mono, 10_000);
 defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
 
 #[rtic::app(device = stm32g4xx_hal::stm32, peripherals = true)]

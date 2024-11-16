@@ -1,3 +1,5 @@
+//! Device firmware upgrade.
+
 use crate::hal::stm32::FLASH;
 use usbd_dfu::*;
 

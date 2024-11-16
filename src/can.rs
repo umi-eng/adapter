@@ -1,3 +1,5 @@
+//! Controller aread network.
+
 use crate::hal::{
     can::Can,
     stm32::{FDCAN2, FDCAN3},

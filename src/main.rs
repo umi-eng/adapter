@@ -309,27 +309,25 @@ where
 {
     let mut data = [0; 64];
 
-    let (header, interrupt) = if fifo1 {
-        (
+    let (header, interrupt) = match fifo1 {
+        true => (
             can.receive1(&mut data).unwrap().unwrap(),
             Interrupt::RxFifo1NewMsg,
-        )
-    } else {
-        (
+        ),
+        false => (
             can.receive0(&mut data).unwrap().unwrap(),
             Interrupt::RxFifo0NewMsg,
-        )
+        ),
     };
+
+    can.clear_interrupt(interrupt);
 
     let len = header.len as usize;
     let id = id_to_embedded(header.id);
 
-    let frame = if header.rtr {
+    if header.rtr {
         usbd_gscan::host::Frame::new_remote(id, len)
     } else {
         usbd_gscan::host::Frame::new(id, &data[..len])
-    };
-
-    can.clear_interrupt(interrupt);
-    frame
+    }
 }

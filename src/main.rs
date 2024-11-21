@@ -24,7 +24,10 @@ use hal::{
     independent_watchdog::IndependentWatchdog,
     prelude::*,
     pwr::PwrExt,
-    rcc::{PllConfig, PllMDiv, PllNMul, PllRDiv, Prescaler},
+    rcc::{
+        FdCanClockSource, PllConfig, PllMDiv, PllNMul, PllQDiv, PllRDiv,
+        Prescaler,
+    },
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
 };
@@ -82,10 +85,11 @@ mod app {
                     m: PllMDiv::DIV_1,
                     n: PllNMul::MUL_10,
                     p: None,
-                    q: None,
+                    q: Some(PllQDiv::DIV_4),
                     r: Some(PllRDiv::DIV_2),
                 })
-                .ahb_psc(Prescaler::Div2),
+                .ahb_psc(Prescaler::NotDivided)
+                .fdcan_src(FdCanClockSource::PLLQ),
             pwr,
         );
         rcc.enable_hsi48();
@@ -167,7 +171,11 @@ mod app {
 
         let usb_can = GsCan::new(
             usb,
-            can::UsbCanDevice::new(rcc.clocks.ahb_clk, fdcan3, fdcan2),
+            can::UsbCanDevice::new(
+                rcc.clocks.pll_clk.q.unwrap(),
+                fdcan3,
+                fdcan2,
+            ),
         );
         let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 

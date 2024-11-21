@@ -94,6 +94,15 @@ mod app {
         );
         rcc.enable_hsi48();
 
+        defmt::info!(
+            "core_clock={}MHz sys_clock={}MHz pll_q_clock={}MHz pll_r_clock={}MHz",
+            rcc.clocks.core_clk.to_MHz(),
+            rcc.clocks.sys_clk.to_MHz(),
+            rcc.clocks.pll_clk.q.unwrap().to_MHz(),
+            rcc.clocks.pll_clk.r.unwrap().to_MHz(),
+
+        );
+
         Mono::start(cx.core.SYST, rcc.clocks.sys_clk.to_Hz());
 
         let watchdog = {

@@ -252,23 +252,9 @@ mod app {
 
     #[task(binds = FDCAN2_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan2_it0(cx: fdcan2_it0::Context) {
-        defmt::trace!("Interrupt 0.");
-
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can1 {
-                let mut data = [0; 64];
-                let header = can.receive0(&mut data).unwrap().unwrap();
-                let len = header.len as usize;
-
-                let id = id_to_embedded(header.id);
-
-                let frame = if header.rtr {
-                    usbd_gscan::host::Frame::new_remote(id, len)
-                } else {
-                    usbd_gscan::host::Frame::new(id, &data[..len])
-                };
-
-                can.clear_interrupt(Interrupt::RxFifo0NewMsg);
+                let frame = handle_fifo(can, false);
 
                 if let Some(frame) = frame {
                     usb_can.transmit(0, &frame);
@@ -280,23 +266,9 @@ mod app {
 
     #[task(binds = FDCAN2_INTR1, shared = [usb_dev, usb_can])]
     fn fdcan2_it1(cx: fdcan2_it1::Context) {
-        defmt::trace!("Interrupt 1.");
-
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can1 {
-                let mut data = [0; 64];
-                let header = can.receive1(&mut data).unwrap().unwrap();
-                let len = header.len as usize;
-
-                let id = id_to_embedded(header.id);
-
-                let frame = if header.rtr {
-                    usbd_gscan::host::Frame::new_remote(id, len)
-                } else {
-                    usbd_gscan::host::Frame::new(id, &data[..len])
-                };
-
-                can.clear_interrupt(Interrupt::RxFifo1NewMsg);
+                let frame = handle_fifo(can, true);
 
                 if let Some(frame) = frame {
                     usb_can.transmit(0, &frame);
@@ -308,23 +280,9 @@ mod app {
 
     #[task(binds = FDCAN3_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan3_it0(cx: fdcan3_it0::Context) {
-        defmt::trace!("Interrupt 0.");
-
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can0 {
-                let mut data = [0; 64];
-                let header = can.receive0(&mut data).unwrap().unwrap();
-                let len = header.len as usize;
-
-                let id = id_to_embedded(header.id);
-
-                let frame = if header.rtr {
-                    usbd_gscan::host::Frame::new_remote(id, len)
-                } else {
-                    usbd_gscan::host::Frame::new(id, &data[..len])
-                };
-
-                can.clear_interrupt(Interrupt::RxFifo0NewMsg);
+                let frame = handle_fifo(can, false);
 
                 if let Some(frame) = frame {
                     usb_can.transmit(1, &frame);
@@ -336,23 +294,9 @@ mod app {
 
     #[task(binds = FDCAN3_INTR1, shared = [usb_dev, usb_can])]
     fn fdcan3_it1(cx: fdcan3_it1::Context) {
-        defmt::trace!("Interrupt 1.");
-
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can0 {
-                let mut data = [0; 64];
-                let header = can.receive1(&mut data).unwrap().unwrap();
-                let len = header.len as usize;
-
-                let id = id_to_embedded(header.id);
-
-                let frame = if header.rtr {
-                    usbd_gscan::host::Frame::new_remote(id, len)
-                } else {
-                    usbd_gscan::host::Frame::new(id, &data[..len])
-                };
-
-                can.clear_interrupt(Interrupt::RxFifo1NewMsg);
+                let frame = handle_fifo(can, true);
 
                 if let Some(frame) = frame {
                     usb_can.transmit(1, &frame);
@@ -361,4 +305,39 @@ mod app {
             }
         });
     }
+}
+
+/// Ingest the frame from the given FIFO queue.
+pub fn handle_fifo<F>(
+    can: &mut fdcan::FdCan<F, fdcan::NormalOperationMode>,
+    fifo1: bool,
+) -> Option<usbd_gscan::host::Frame>
+where
+    F: fdcan::Instance,
+{
+    let mut data = [0; 64];
+
+    let (header, interrupt) = if fifo1 {
+        (
+            can.receive1(&mut data).unwrap().unwrap(),
+            Interrupt::RxFifo1NewMsg,
+        )
+    } else {
+        (
+            can.receive0(&mut data).unwrap().unwrap(),
+            Interrupt::RxFifo0NewMsg,
+        )
+    };
+
+    let len = header.len as usize;
+    let id = id_to_embedded(header.id);
+
+    let frame = if header.rtr {
+        usbd_gscan::host::Frame::new_remote(id, len)
+    } else {
+        usbd_gscan::host::Frame::new(id, &data[..len])
+    };
+
+    can.clear_interrupt(interrupt);
+    frame
 }

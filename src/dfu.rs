@@ -45,7 +45,12 @@ impl DFUMemIO for DfuFlash {
     }
 
     fn store_write_buffer(&mut self, src: &[u8]) -> Result<(), ()> {
-        todo!()
+        if src.len() <= self.buffer.len() {
+            self.buffer[..src.len()].copy_from_slice(src);
+            Ok(())
+        } else {
+            Err(())
+        }
     }
 
     fn program(

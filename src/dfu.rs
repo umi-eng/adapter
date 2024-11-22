@@ -84,8 +84,60 @@ impl DFUMemIO for DfuFlash {
         &mut self,
         address: u32,
         length: usize,
-    ) -> Result<(), DFUMemError> {
-        todo!()
+    ) -> Result<(), DfuMemoryError> {
+        if !FLASH_MEMORY.contains(&address) {
+            return Err(DfuMemoryError::Address);
+        }
+
+        // Always write to the inactive bank.
+        let address = address + BANK2_OFFSET;
+
+        self.unlock(|f, buffer| {
+            let data = &mut buffer[..length];
+
+            for idx in (0..data.len()).step_by(8) {
+                let address1 = (address as u32 + idx as u32) as *mut u32;
+                let address2 = (address as u32 + 4 + idx as u32) as *mut u32;
+
+                let word1: u32;
+                let word2: u32;
+
+                // Check the data is enough to fill two words. If not, pad the
+                // data with 0xff.
+                // Taken from: https://github.com/stm32-rs/stm32g4xx-hal/blob/main/src/flash.rs
+                if idx + 8 > data.len() {
+                    let mut tmp_buffer = [255u8; 8];
+                    tmp_buffer[idx..data.len()].copy_from_slice(
+                        &data[(idx + idx)..(data.len() + idx)],
+                    );
+                    let tmp_dword = u64::from_le_bytes(tmp_buffer);
+                    word1 = tmp_dword as u32;
+                    word2 = (tmp_dword >> 32) as u32;
+                } else {
+                    word1 = (data[idx] as u32)
+                        | (data[idx + 1] as u32) << 8
+                        | (data[idx + 2] as u32) << 16
+                        | (data[idx + 3] as u32) << 24;
+
+                    word2 = (data[idx + 4] as u32)
+                        | (data[idx + 5] as u32) << 8
+                        | (data[idx + 6] as u32) << 16
+                        | (data[idx + 7] as u32) << 24;
+                }
+
+                f.cr.modify(|_, w| w.pg().set_bit());
+
+                // wait while busy
+                while f.sr.read().bsy().bit_is_set() {}
+
+                unsafe {
+                    core::ptr::write_volatile(address1, word1);
+                    core::ptr::write_volatile(address2, word2);
+                }
+            }
+        });
+
+        Ok(())
     }
 
     fn manifestation(&mut self) -> Result<(), DFUManifestationError> {

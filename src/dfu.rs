@@ -24,6 +24,7 @@ impl DFUMemIO for DfuFlash {
     const ERASE_TIME_MS: u32 = 25;
     const FULL_ERASE_TIME_MS: u32 = 25;
     const TRANSFER_SIZE: u16 = 128;
+    const MANIFESTATION_TOLERANT: bool = false;
 
     fn read(
         &mut self,

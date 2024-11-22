@@ -29,9 +29,12 @@ impl DFUMemIO for DfuFlash {
         &mut self,
         address: u32,
         length: usize,
-    ) -> Result<&[u8], DFUMemError> {
-        let address = address as *const u8;
+    ) -> Result<&[u8], DfuMemoryError> {
+        if !FLASH_MEMORY.contains(&address) {
+            return Err(DfuMemoryError::Address);
+        }
 
+        let address = address as *const u8;
         Ok(unsafe { core::slice::from_raw_parts(address, length) })
     }
 

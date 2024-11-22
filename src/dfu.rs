@@ -1,18 +1,93 @@
 //! Device firmware upgrade.
 
-use crate::hal::stm32::FLASH;
+use crate::hal::stm32::{FLASH, SYSCFG};
+use core::ops::RangeInclusive;
 use usbd_dfu::*;
 
+const KEY1: u32 = 0x4567_0123;
+const KEY2: u32 = 0xCDEF_89AB;
+const OPT_KEY1: u32 = 0x0819_2A3B;
+const OPT_KEY2: u32 = 0x4C5D_6E7F;
+const FLASH_MEMORY: RangeInclusive<u32> = 0x0800_0000..=0x0803_FFFF;
+const BANK2_OFFSET: u32 = 0x00040000;
+
+/// Bank erase selection.
+const CR_BKER: u32 = 1 << 11;
+/// Boot from bank 2 enabled bit.
+const OPTR_BFB2: u32 = 1 << 20;
+/// Dual bank mode enabled bit.
+const OPTR_DBANK: u32 = 1 << 22;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, defmt::Format)]
+#[repr(u8)]
+pub enum Bank {
+    Bank1 = 0,
+    Bank2 = 1,
+}
+
 pub struct DfuFlash {
-    write_buffer: [u8; 2048],
+    buffer: [u8; 2048],
     flash: FLASH,
+    syscfg: SYSCFG,
 }
 
 impl DfuFlash {
-    pub fn new(flash: FLASH) -> Self {
-        Self {
-            write_buffer: [0; 2048],
+    pub fn new(flash: FLASH, syscfg: SYSCFG) -> Self {
+        let mut this = Self {
+            buffer: [0; 2048],
             flash,
+            syscfg,
+        };
+
+        this.enable_dual_bank();
+
+        let active = this.active_bank();
+        defmt::info!("Active flash bank: {}", active);
+
+        this
+    }
+
+    fn unlock<F, T>(&mut self, f: F) -> T
+    where
+        F: FnOnce(&mut FLASH, &mut [u8]) -> T,
+    {
+        self.flash.keyr.write(|w| unsafe { w.bits(KEY1) });
+        self.flash.keyr.write(|w| unsafe { w.bits(KEY2) });
+
+        // Flash should unlock on first try. If not we are in an unrecoverable
+        // state.
+        if self.flash.cr.read().lock().bit() {
+            panic!("Flash is still locked");
+        }
+
+        let result = f(&mut self.flash, &mut self.buffer);
+
+        self.flash.cr.modify(|_, w| w.lock().set_bit());
+
+        result
+    }
+
+    fn opt_unlock<F, T>(&mut self, f: F) -> T
+    where
+        F: FnOnce(&mut FLASH) -> T,
+    {
+        self.unlock(|mut flash, _| {
+            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY1) });
+            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY2) });
+
+            // Flash options should unlock on first try. If not we are in an
+            // unrecoverable state.
+            if flash.cr.read().optlock().bit() {
+                panic!("Flash opt is still locked");
+            }
+
+            let result = f(&mut flash);
+
+            flash.cr.modify(|_, w| w.optlock().set_bit());
+
+            result
+        })
+    }
         }
     }
 }

@@ -186,7 +186,10 @@ mod app {
                 fdcan2,
             ),
         );
-        let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
+        let usb_dfu = DfuClass::new(
+            usb,
+            dfu::DfuFlash::new(cx.device.FLASH, cx.device.SYSCFG),
+        );
 
         static SERIAL: static_cell::StaticCell<heapless::String<9>> =
             static_cell::StaticCell::new();

@@ -43,21 +43,24 @@ const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
 };
 
 pub struct UsbCanDevice {
+    /// CAN peripheral clock. Used by the host for bit timing calculations.
     clock: Hertz,
-    pub can0: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
-    pub can1: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
+    /// CAN interface labeled "CAN1" on PCB.
+    pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+    /// CAN interface labeled "CAN1" on PCB.
+    pub can2: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
 }
 
 impl UsbCanDevice {
     pub fn new(
         clock: Hertz,
-        can0: FdCan<Can<FDCAN3>, NormalOperationMode>,
-        can1: FdCan<Can<FDCAN2>, NormalOperationMode>,
+        can1: FdCan<Can<FDCAN3>, NormalOperationMode>,
+        can2: FdCan<Can<FDCAN2>, NormalOperationMode>,
     ) -> Self {
         Self {
             clock,
-            can0: Some(can0),
             can1: Some(can1),
+            can2: Some(can2),
         }
     }
 }
@@ -96,17 +99,17 @@ impl Device for UsbCanDevice {
 
         match interface {
             0 => {
-                if let Some(can) = self.can0.take() {
-                    let mut config = can.into_config_mode();
-                    config.set_nominal_bit_timing(btr);
-                    self.can0.replace(config.into_normal());
-                }
-            }
-            1 => {
                 if let Some(can) = self.can1.take() {
                     let mut config = can.into_config_mode();
                     config.set_nominal_bit_timing(btr);
                     self.can1.replace(config.into_normal());
+                }
+            }
+            1 => {
+                if let Some(can) = self.can2.take() {
+                    let mut config = can.into_config_mode();
+                    config.set_nominal_bit_timing(btr);
+                    self.can2.replace(config.into_normal());
                 }
             }
             _ => {
@@ -132,17 +135,17 @@ impl Device for UsbCanDevice {
 
         match interface {
             0 => {
-                if let Some(can) = self.can0.take() {
-                    let mut config = can.into_config_mode();
-                    config.set_data_bit_timing(btr);
-                    self.can0.replace(config.into_normal());
-                }
-            }
-            1 => {
                 if let Some(can) = self.can1.take() {
                     let mut config = can.into_config_mode();
                     config.set_data_bit_timing(btr);
                     self.can1.replace(config.into_normal());
+                }
+            }
+            1 => {
+                if let Some(can) = self.can2.take() {
+                    let mut config = can.into_config_mode();
+                    config.set_data_bit_timing(btr);
+                    self.can2.replace(config.into_normal());
                 }
             }
             _ => {
@@ -154,17 +157,17 @@ impl Device for UsbCanDevice {
     fn reset(&mut self, interface: u8) {
         match interface {
             0 => {
-                if let Some(mut can) = self.can0.take() {
-                    can.enable_interrupt_line(InterruptLine::_0, false);
-                    can.enable_interrupt_line(InterruptLine::_1, false);
-                    self.can0.replace(can);
-                }
-            }
-            1 => {
                 if let Some(mut can) = self.can1.take() {
                     can.enable_interrupt_line(InterruptLine::_0, false);
                     can.enable_interrupt_line(InterruptLine::_1, false);
                     self.can1.replace(can);
+                }
+            }
+            1 => {
+                if let Some(mut can) = self.can2.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, false);
+                    can.enable_interrupt_line(InterruptLine::_1, false);
+                    self.can2.replace(can);
                 }
             }
             _ => defmt::error!("Interface {} not in use", interface),
@@ -174,17 +177,17 @@ impl Device for UsbCanDevice {
     fn start(&mut self, interface: u8) {
         match interface {
             0 => {
-                if let Some(mut can) = self.can0.take() {
-                    can.enable_interrupt_line(InterruptLine::_0, true);
-                    can.enable_interrupt_line(InterruptLine::_1, true);
-                    self.can0.replace(can);
-                }
-            }
-            1 => {
                 if let Some(mut can) = self.can1.take() {
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
                     self.can1.replace(can);
+                }
+            }
+            1 => {
+                if let Some(mut can) = self.can2.take() {
+                    can.enable_interrupt_line(InterruptLine::_0, true);
+                    can.enable_interrupt_line(InterruptLine::_1, true);
+                    self.can2.replace(can);
                 }
             }
             _ => defmt::error!("Interface {} not in use", interface),
@@ -195,8 +198,8 @@ impl Device for UsbCanDevice {
         defmt::info!("Interface number: {}", interface);
 
         let counters = match interface {
-            0 => self.can0.as_ref().unwrap().error_counters(),
-            1 => self.can1.as_ref().unwrap().error_counters(),
+            0 => self.can1.as_ref().unwrap().error_counters(),
+            1 => self.can2.as_ref().unwrap().error_counters(),
             _ => panic!("Interface {} not in use", interface),
         };
 
@@ -229,12 +232,12 @@ impl Device for UsbCanDevice {
 
         match interface {
             0 => {
-                if let Some(can) = &mut self.can0 {
+                if let Some(can) = &mut self.can1 {
                     can.transmit(header, frame.data()).unwrap();
                 }
             }
             1 => {
-                if let Some(can) = &mut self.can1 {
+                if let Some(can) = &mut self.can2 {
                     can.transmit(header, frame.data()).unwrap();
                 }
             }

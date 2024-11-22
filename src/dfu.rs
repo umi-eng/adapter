@@ -39,8 +39,9 @@ impl DFUMemIO for DfuFlash {
         todo!()
     }
 
-    fn erase_all(&mut self) -> Result<(), DFUMemError> {
-        todo!()
+    fn erase_all(&mut self) -> Result<(), DfuMemoryError> {
+        defmt::warn!("Mass erase not supported.");
+        Err(DfuMemoryError::Unknown)
     }
 
     fn store_write_buffer(&mut self, src: &[u8]) -> Result<(), ()> {

@@ -214,8 +214,9 @@ impl DFUMemIO for DfuFlash {
 
         Ok(())
     }
+    fn manifestation(&mut self) -> Result<(), DfuManifestationError> {
+        self.swap_banks();
 
-    fn manifestation(&mut self) -> Result<(), DFUManifestationError> {
-        todo!()
+        crate::hal::cortex_m::peripheral::SCB::sys_reset()
     }
 }

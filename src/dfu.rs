@@ -35,8 +35,31 @@ impl DFUMemIO for DfuFlash {
         Ok(unsafe { core::slice::from_raw_parts(address, length) })
     }
 
-    fn erase(&mut self, address: u32) -> Result<(), DFUMemError> {
-        todo!()
+    fn erase(&mut self, address: u32) -> Result<(), DfuMemoryError> {
+        if !FLASH_MEMORY.contains(&address) {
+            return Err(DfuMemoryError::Address);
+        }
+
+        let sector = self.sector_from_address(address).unwrap();
+
+        self.unlock(|f, _| {
+            // clear any existing operations
+            f.cr.modify(|_, w| unsafe { w.bits(0) });
+
+            f.cr.modify(|_, w| unsafe {
+                w.bits(CR_BKER).pnb().bits(sector).per().set_bit()
+            });
+
+            f.cr.modify(|_, w| w.strt().set_bit());
+
+            // wait while busy
+            while f.sr.read().bsy().bit_is_set() {}
+
+            // remove page erase operation bit
+            f.cr.modify(|_, w| w.per().clear_bit());
+        });
+
+        Ok(())
     }
 
     fn erase_all(&mut self) -> Result<(), DfuMemoryError> {

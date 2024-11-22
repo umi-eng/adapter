@@ -92,9 +92,9 @@ impl DfuFlash {
     }
 }
 
-impl DFUMemIO for DfuFlash {
-    const MEM_INFO_STRING: &'static str = "@Flash/0x08000000/128*2Kg";
-    const INITIAL_ADDRESS_POINTER: u32 = 0x0800_0000;
+impl DfuMemory for DfuFlash {
+    const MEM_INFO_STRING: &'static str = "@FlashUpdate/0x08000000/128*2Kg";
+    const INITIAL_ADDRESS_POINTER: u32 = *FLASH_MEMORY.start();
     const PROGRAM_TIME_MS: u32 = 3;
     const ERASE_TIME_MS: u32 = 25;
     const FULL_ERASE_TIME_MS: u32 = 25;

@@ -30,6 +30,7 @@ static_cell = "2.1.0"
 embedded-can = "0.4.1"
 crc = "3.2.1"
 heapless = "0.8.0"
+nb = "1.1.0"
 
 [build-dependencies]
 chrono = "0.4.38"

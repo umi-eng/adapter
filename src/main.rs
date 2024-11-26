@@ -7,6 +7,7 @@ mod dfu;
 mod vpd;
 
 use defmt_rtt as _;
+use nb::block;
 use panic_probe as _;
 use stm32g4xx_hal as hal;
 
@@ -313,13 +314,13 @@ where
     let mut data = [0; 64];
 
     let (header, interrupt) = match fifo1 {
-        true => (
-            can.receive1(&mut data).unwrap().unwrap(),
-            Interrupt::RxFifo1NewMsg,
-        ),
         false => (
-            can.receive0(&mut data).unwrap().unwrap(),
+            block!(can.receive0(&mut data)).unwrap().unwrap(),
             Interrupt::RxFifo0NewMsg,
+        ),
+        true => (
+            block!(can.receive1(&mut data)).unwrap().unwrap(),
+            Interrupt::RxFifo1NewMsg,
         ),
     };
 

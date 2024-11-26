@@ -88,7 +88,83 @@ impl DfuFlash {
             result
         })
     }
+
+    /// Enable dual bank flash mode.
+    pub fn enable_dual_bank(&mut self) {
+        self.opt_unlock(|f| {
+            f.optr
+                .modify(|r, w| unsafe { w.bits(r.bits() | OPTR_DBANK) });
+
+            f.cr.modify(|_, w| w.optstrt().set_bit());
+
+            // wait while busy
+            while f.sr.read().bsy().bit_is_set() {}
+        });
+    }
+
+    fn sector_from_address(&mut self, address: u32) -> Option<u8> {
+        let base = 0x0800_0000;
+        let sector_size = 2048;
+
+        // Ensure address is within range
+        if address < base {
+            return None;
         }
+
+        // Check if address is at start of sector
+        if (address - base) % sector_size != 0 {
+            return None;
+        }
+
+        // Calculate sector number
+        let sector = (address - base) / sector_size;
+
+        // Verify sector is within valid range
+        if sector <= 127 {
+            Some(sector as u8)
+        } else {
+            None
+        }
+    }
+
+    /// Get active bank number.
+    fn active_bank(&self) -> Bank {
+        let bank = (self.flash.optr.read().bits() & OPTR_BFB2) != 0;
+        match bank {
+            false => Bank::Bank1,
+            true => Bank::Bank2,
+        }
+    }
+
+    #[allow(unused)]
+    fn inactive_bank(&self) -> Bank {
+        match self.active_bank() {
+            Bank::Bank1 => Bank::Bank2,
+            Bank::Bank2 => Bank::Bank1,
+        }
+    }
+
+    /// Swap flash bank boot selection.
+    fn swap_banks(&mut self) {
+        let bank = self.active_bank();
+
+        self.opt_unlock(|f| {
+            match bank {
+                Bank::Bank1 => f
+                    .optr
+                    .modify(|r, w| unsafe { w.bits(r.bits() | OPTR_BFB2) }),
+                Bank::Bank2 => f
+                    .optr
+                    .modify(|r, w| unsafe { w.bits(r.bits() & !OPTR_BFB2) }),
+            };
+
+            f.cr.modify(|_, w| w.optstrt().set_bit());
+
+            while f.sr.read().bsy().bit_is_set() {}
+
+            // launch new firmware
+            f.cr.modify(|_, w| w.obl_launch().set_bit());
+        });
     }
 }
 

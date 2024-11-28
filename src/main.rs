@@ -259,7 +259,7 @@ mod app {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can2 {
                 if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(0, &frame);
+                    usb_can.transmit(1, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -271,7 +271,7 @@ mod app {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can2 {
                 if let Some(frame) = handle_fifo(can, true) {
-                    usb_can.transmit(0, &frame);
+                    usb_can.transmit(1, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -283,7 +283,7 @@ mod app {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can1 {
                 if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(1, &frame);
+                    usb_can.transmit(0, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -295,7 +295,7 @@ mod app {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can1 {
                 if let Some(frame) = handle_fifo(can, true) {
-                    usb_can.transmit(1, &frame);
+                    usb_can.transmit(0, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }

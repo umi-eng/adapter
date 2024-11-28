@@ -47,7 +47,7 @@ pub struct UsbCanDevice {
     clock: Hertz,
     /// CAN interface labeled "CAN1" on PCB.
     pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
-    /// CAN interface labeled "CAN1" on PCB.
+    /// CAN interface labeled "CAN2" on PCB.
     pub can2: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
 }
 

@@ -230,7 +230,9 @@ impl Device for UsbCanDevice {
             len: frame.dlc() as u8,
             frame_format,
             id: id_to_fdcan(frame.id()),
-            bit_rate_switching: false,
+            bit_rate_switching: frame
+                .flags
+                .intersects(FrameFlag::BIT_RATE_SWITCH),
             marker: None,
         };
 

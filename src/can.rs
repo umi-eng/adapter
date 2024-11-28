@@ -1,4 +1,4 @@
-//! Controller aread network.
+//! Controller area network.
 
 use crate::hal::{
     can::Can,

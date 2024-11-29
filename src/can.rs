@@ -222,7 +222,7 @@ impl Device for UsbCanDevice {
         frame: usbd_gscan::host::Frame,
     ) -> Result<(), ()> {
         let header = TxFrameHeader {
-            len: frame.dlc() as u8,
+            len: frame.data().len() as u8,
             frame_format: if frame.flags.intersects(FrameFlag::FD) {
                 FrameFormat::Fdcan
             } else {

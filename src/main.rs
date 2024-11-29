@@ -260,9 +260,9 @@ mod app {
     #[task(binds = FDCAN2_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan2_it0(cx: fdcan2_it0::Context) {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can2 {
+            if let Some(can) = &mut usb_can.device.can1 {
                 if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(1, &frame);
+                    usb_can.transmit(0, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -272,9 +272,9 @@ mod app {
     #[task(binds = FDCAN2_INTR1, shared = [usb_dev, usb_can])]
     fn fdcan2_it1(cx: fdcan2_it1::Context) {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can2 {
+            if let Some(can) = &mut usb_can.device.can1 {
                 if let Some(frame) = handle_fifo(can, true) {
-                    usb_can.transmit(1, &frame);
+                    usb_can.transmit(0, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -284,9 +284,9 @@ mod app {
     #[task(binds = FDCAN3_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan3_it0(cx: fdcan3_it0::Context) {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
+            if let Some(can) = &mut usb_can.device.can2 {
                 if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(0, &frame);
+                    usb_can.transmit(1, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }
@@ -296,9 +296,9 @@ mod app {
     #[task(binds = FDCAN3_INTR1, shared = [usb_dev, usb_can])]
     fn fdcan3_it1(cx: fdcan3_it1::Context) {
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
+            if let Some(can) = &mut usb_can.device.can2 {
                 if let Some(frame) = handle_fifo(can, true) {
-                    usb_can.transmit(0, &frame);
+                    usb_can.transmit(1, &frame);
                     usb_dev.poll(&mut [usb_can]);
                 }
             }

@@ -15,7 +15,9 @@ use can::id_to_embedded;
 use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::Frame;
 use fdcan::{
-    config::{Interrupt, Interrupts, NominalBitTiming},
+    config::{
+        FrameTransmissionConfig, Interrupt, Interrupts, NominalBitTiming,
+    },
     frame::FrameFormat,
 };
 use fugit::ExtU32;
@@ -145,6 +147,7 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
+            can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );
@@ -161,6 +164,7 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
             can.set_nominal_bit_timing(btr);
+            can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
             );

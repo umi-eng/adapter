@@ -216,11 +216,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn receive(
-        &mut self,
-        interface: u8,
-        frame: usbd_gscan::host::Frame,
-    ) -> Result<(), ()> {
+    fn receive(&mut self, interface: u8, frame: usbd_gscan::host::Frame) {
         let header = TxFrameHeader {
             len: frame.data().len() as u8,
             frame_format: if frame.flags.intersects(FrameFlag::FD) {
@@ -240,17 +236,14 @@ impl Device for UsbCanDevice {
                 if let Some(can) = &mut self.can1 {
                     nb::block!(can.transmit(header, frame.data())).unwrap();
                 }
-                Ok(())
             }
             1 => {
                 if let Some(can) = &mut self.can2 {
                     nb::block!(can.transmit(header, frame.data())).unwrap();
                 }
-                Ok(())
             }
             i => {
                 defmt::error!("Interface {} not in use.", i);
-                Err(())
             }
         }
     }

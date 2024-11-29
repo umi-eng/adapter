@@ -9,6 +9,7 @@ use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::{Frame as _, Id};
 use fdcan::{
     config::{DataBitTiming, InterruptLine, NominalBitTiming},
+    frame::FrameFormat,
     FdCan, ReceiveErrorOverflow,
 };
 use fdcan::{frame::TxFrameHeader, NormalOperationMode};
@@ -220,15 +221,13 @@ impl Device for UsbCanDevice {
         interface: u8,
         frame: usbd_gscan::host::Frame,
     ) -> Result<(), ()> {
-        let frame_format = if frame.flags.intersects(FrameFlag::FD) {
-            fdcan::frame::FrameFormat::Fdcan
-        } else {
-            fdcan::frame::FrameFormat::Standard
-        };
-
         let header = TxFrameHeader {
             len: frame.dlc() as u8,
-            frame_format,
+            frame_format: if frame.flags.intersects(FrameFlag::FD) {
+                FrameFormat::Fdcan
+            } else {
+                FrameFormat::Standard
+            },
             id: id_to_fdcan(frame.id()),
             bit_rate_switching: frame
                 .flags

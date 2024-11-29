@@ -14,7 +14,10 @@ use stm32g4xx_hal as hal;
 use can::id_to_embedded;
 use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::Frame;
-use fdcan::config::{Interrupt, Interrupts, NominalBitTiming};
+use fdcan::{
+    config::{Interrupt, Interrupts, NominalBitTiming},
+    frame::FrameFormat,
+};
 use fugit::ExtU32;
 use hal::{
     can::CanExt,
@@ -38,7 +41,7 @@ use usb_device::{
     device::{StringDescriptors, UsbDevice, UsbDeviceBuilder},
 };
 use usbd_dfu::DfuClass;
-use usbd_gscan::GsCan;
+use usbd_gscan::{host::FrameFlag, GsCan};
 
 systick_monotonic!(Mono, 10_000);
 defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
@@ -329,9 +332,23 @@ where
     let len = header.len as usize;
     let id = id_to_embedded(header.id);
 
-    if header.rtr {
+    let frame = if header.rtr {
         usbd_gscan::host::Frame::new_remote(id, len)
     } else {
         usbd_gscan::host::Frame::new(id, &data[..len])
+    };
+
+    if let Some(mut frame) = frame {
+        if header.frame_format == FrameFormat::Fdcan {
+            frame.flags |= FrameFlag::FD;
+        }
+
+        if header.bit_rate_switching {
+            frame.flags |= FrameFlag::BIT_RATE_SWITCH;
+        }
+
+        Some(frame)
+    } else {
+        None
     }
 }

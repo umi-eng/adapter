@@ -47,16 +47,16 @@ pub struct UsbCanDevice {
     /// CAN peripheral clock. Used by the host for bit timing calculations.
     clock: Hertz,
     /// CAN interface labeled "CAN1" on PCB.
-    pub can1: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
+    pub can1: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
     /// CAN interface labeled "CAN2" on PCB.
-    pub can2: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
+    pub can2: Option<FdCan<Can<FDCAN3>, NormalOperationMode>>,
 }
 
 impl UsbCanDevice {
     pub fn new(
         clock: Hertz,
-        can1: FdCan<Can<FDCAN3>, NormalOperationMode>,
-        can2: FdCan<Can<FDCAN2>, NormalOperationMode>,
+        can1: FdCan<Can<FDCAN2>, NormalOperationMode>,
+        can2: FdCan<Can<FDCAN3>, NormalOperationMode>,
     ) -> Self {
         Self {
             clock,

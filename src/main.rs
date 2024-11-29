@@ -186,8 +186,8 @@ mod app {
             usb,
             can::UsbCanDevice::new(
                 rcc.clocks.pll_clk.q.unwrap(),
-                fdcan3,
                 fdcan2,
+                fdcan3,
             ),
         );
         let usb_dfu = DfuClass::new(

@@ -174,7 +174,7 @@ impl DfuMemory for DfuFlash {
     const PROGRAM_TIME_MS: u32 = 3;
     const ERASE_TIME_MS: u32 = 25;
     const FULL_ERASE_TIME_MS: u32 = 25;
-    const TRANSFER_SIZE: u16 = 128;
+    const TRANSFER_SIZE: u16 = 64;
     const MANIFESTATION_TOLERANT: bool = false;
 
     fn read(

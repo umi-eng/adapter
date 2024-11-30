@@ -6,7 +6,7 @@ Based on the gs_usb protocol, this firmware is plug and play on most recent linu
 
 ## Purchase
 
-You can purchase our CAN FD Adatper from our [online store](https://umi.engineering/products/can-fd-adapter).
+You can purchase CAN FD Adapters from our [online store](https://umi.engineering/products/can-fd-adapter).
 
 ## Firmware Update
 

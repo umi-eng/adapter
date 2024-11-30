@@ -178,6 +178,7 @@ bitflags! {
 }
 
 /// Reads the 1 kilobyte of OTP memory.
+#[allow(unused)]
 pub fn read_otp() -> &'static [u8] {
     const OTP_ADDRESS: *const u8 = 0x1FFF7000 as *const u8;
     const SLICE_LENGTH: usize = 1024; // 1 kilobyte

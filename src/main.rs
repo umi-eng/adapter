@@ -61,7 +61,7 @@ mod app {
 
     #[shared]
     struct Shared {
-        vpd: vpd::VitalProductData,
+        _vpd: vpd::VitalProductData,
         usb_dev: UsbDevice<'static, Usb>,
         usb_can: usbd_gscan::GsCan<'static, Usb, can::UsbCanDevice>,
         usb_dfu: DfuClass<Usb, dfu::DfuFlash>,
@@ -118,14 +118,12 @@ mod app {
         };
 
         let vpd = {
-            let data = vpd::VitalProductData {
-                serial: vpd::Serial::new(24, 01, 0001),
+            vpd::VitalProductData {
+                serial: vpd::Serial::new(24, 1, 1),
                 version: vpd::Version::new(0, 3, 1, 0),
                 sku: vpd::Sku::new(*b"M2FD"),
                 features: vpd::Features::empty(),
-            };
-
-            data
+            }
         };
 
         let gpioa = cx.device.GPIOA.split(&mut rcc);
@@ -194,10 +192,7 @@ mod app {
                 fdcan3,
             ),
         );
-        let usb_dfu = DfuClass::new(
-            usb,
-            dfu::DfuFlash::new(cx.device.FLASH, cx.device.SYSCFG),
-        );
+        let usb_dfu = DfuClass::new(usb, dfu::DfuFlash::new(cx.device.FLASH));
 
         static SERIAL: static_cell::StaticCell<heapless::String<9>> =
             static_cell::StaticCell::new();
@@ -220,7 +215,7 @@ mod app {
 
         (
             Shared {
-                vpd,
+                _vpd: vpd,
                 usb_dev,
                 usb_can,
                 usb_dfu,

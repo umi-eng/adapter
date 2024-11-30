@@ -1,6 +1,6 @@
 //! Device firmware upgrade.
 
-use crate::hal::stm32::{FLASH, SYSCFG};
+use crate::hal::stm32::FLASH;
 use core::ops::RangeInclusive;
 use usbd_dfu::*;
 
@@ -28,15 +28,13 @@ pub enum Bank {
 pub struct DfuFlash {
     buffer: [u8; 2048],
     flash: FLASH,
-    syscfg: SYSCFG,
 }
 
 impl DfuFlash {
-    pub fn new(flash: FLASH, syscfg: SYSCFG) -> Self {
+    pub fn new(flash: FLASH) -> Self {
         let mut this = Self {
             buffer: [0; 2048],
             flash,
-            syscfg,
         };
 
         this.enable_dual_bank();
@@ -71,7 +69,7 @@ impl DfuFlash {
     where
         F: FnOnce(&mut FLASH) -> T,
     {
-        self.unlock(|mut flash, _| {
+        self.unlock(|flash, _| {
             flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY1) });
             flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY2) });
 
@@ -81,7 +79,7 @@ impl DfuFlash {
                 panic!("Flash opt is still locked");
             }
 
-            let result = f(&mut flash);
+            let result = f(flash);
 
             flash.cr.modify(|_, w| w.optlock().set_bit());
 
@@ -247,8 +245,8 @@ impl DfuMemory for DfuFlash {
             let data = &mut buffer[..length];
 
             for idx in (0..data.len()).step_by(8) {
-                let address1 = (address as u32 + idx as u32) as *mut u32;
-                let address2 = (address as u32 + 4 + idx as u32) as *mut u32;
+                let address1 = (address + idx as u32) as *mut u32;
+                let address2 = (address + 4 + idx as u32) as *mut u32;
 
                 let word1: u32;
                 let word2: u32;

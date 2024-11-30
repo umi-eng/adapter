@@ -691,13 +691,12 @@ dependencies = [
 [[package]]
 name = "stm32g4xx-hal"
 version = "0.0.2"
-source = "git+https://github.com/umi-eng/stm32g4xx-hal/?branch=feature/usb#2e8b35b84344b157391ecf046edae2258b9d60b2"
+source = "git+https://github.com/umi-eng/stm32g4xx-hal/#fca39892ac02673929af55bd44bd447ec524c957"
 dependencies = [
  "bare-metal 0.2.5",
  "bitflags 1.3.2",
  "cast",
  "cortex-m",
- "critical-section",
  "embedded-dma",
  "embedded-hal 0.2.7",
  "fdcan",
@@ -770,10 +769,13 @@ version = "0.1.0"
 dependencies = [
  "bitflags 2.6.0",
  "chrono",
+ "crc",
  "defmt",
  "defmt-rtt",
  "embedded-can",
  "fdcan",
+ "heapless",
+ "nb 1.1.0",
  "panic-probe",
  "rtic",
  "rtic-monotonics",
@@ -806,9 +808,8 @@ dependencies = [
 
 [[package]]
 name = "usbd-dfu"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48a6b0820a430446fd361a89ca0d0b9572134d307cc8f4a77c0cce973a78b820"
+version = "0.4.1"
+source = "git+https://github.com/umi-eng/usbd-dfu#d1ec8ce4c65b563c920f69a089d35f206b978829"
 dependencies = [
  "usb-device",
 ]
@@ -816,7 +817,7 @@ dependencies = [
 [[package]]
 name = "usbd-gscan"
 version = "0.1.0"
-source = "git+https://github.com/umi-eng/usbd-gscan.git#6486b67eac4de8cfb410a53c6901e2c14439a7c0"
+source = "git+https://github.com/umi-eng/usbd-gscan.git#9359154db9b6125917cd53ab20d5da4d8c7b176c"
 dependencies = [
  "bitflags 2.6.0",
  "defmt",

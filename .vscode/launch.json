@@ -15,8 +15,8 @@
       "coreConfigs": [
         {
           "coreIndex": 0,
-          "programBinary": "./target/thumbv7em-none-eabihf/debug/umi-canfd-adapter",
-          "svdFile": "./STM32G474.svd"
+          "programBinary": "target/thumbv7em-none-eabihf/debug/umi-canfd-adapter",
+          "svdFile": ".vscode/STM32G474.svd"
         }
       ]
     }

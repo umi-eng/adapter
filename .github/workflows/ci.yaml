@@ -11,6 +11,10 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
+      - name: Debug
+        run: |
+          echo "github.ref = ${{ github.ref }}"
+          echo "github.event_name = ${{ github.event_name }}"
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Install Rust toolchain
@@ -99,7 +103,7 @@ jobs:
 
           echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
           echo "Versions match: ${TAG_VERSION}"
-          echo "filename=umi-adapter-v${TAG_VERSION}.bin"
+          echo "filename=umi-adapter-v${TAG_VERSION}.bin" >> $GITHUB_OUTPUT
       - run: cargo objcopy --release -- -O binary ${{ steps.get-version.outputs.filename }}
       - name: Install dfu-utils
         run: sudo apt-get install -y dfu-util

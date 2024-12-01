@@ -23,3 +23,12 @@ The latest firmware is available on the GitHub [releases page](https://github.co
 ```shell
 dfu-util -s 0x08000000:leave -D <new-firmware>.bin
 ```
+
+## Releasing
+
+Bump the version number in the `Cargo.toml` and then tag the desired commit with the version number and push to `main`.
+
+```shell
+git tag v0.0.0
+git push --all
+```

@@ -26,6 +26,7 @@ pub enum Bank {
 }
 
 pub struct DfuFlash {
+    /// Write buffer. Size of flash page.
     buffer: [u8; 2048],
     flash: FLASH,
 }

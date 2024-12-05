@@ -289,6 +289,7 @@ impl DfuMemory for DfuFlash {
 
         Ok(())
     }
+
     fn manifestation(&mut self) -> Result<(), DfuManifestationError> {
         self.swap_banks();
 

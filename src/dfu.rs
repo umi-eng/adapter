@@ -4,10 +4,8 @@ use crate::hal::stm32::FLASH;
 use core::ops::RangeInclusive;
 use usbd_dfu::*;
 
-const KEY1: u32 = 0x4567_0123;
-const KEY2: u32 = 0xCDEF_89AB;
-const OPT_KEY1: u32 = 0x0819_2A3B;
-const OPT_KEY2: u32 = 0x4C5D_6E7F;
+const KEY: [u32; 2] = [0x4567_0123, 0xCDEF_89AB];
+const OPT_KEY: [u32; 2] = [0x0819_2A3B, 0x4C5D_6E7F];
 const FLASH_MEMORY: RangeInclusive<u32> = 0x0800_0000..=0x0803_FFFF;
 const BANK2_OFFSET: u32 = 0x00040000;
 
@@ -50,8 +48,8 @@ impl DfuFlash {
     where
         F: FnOnce(&mut FLASH, &mut [u8]) -> T,
     {
-        self.flash.keyr.write(|w| unsafe { w.bits(KEY1) });
-        self.flash.keyr.write(|w| unsafe { w.bits(KEY2) });
+        self.flash.keyr.write(|w| unsafe { w.bits(KEY[0]) });
+        self.flash.keyr.write(|w| unsafe { w.bits(KEY[1]) });
 
         // Flash should unlock on first try. If not we are in an unrecoverable
         // state.
@@ -71,8 +69,8 @@ impl DfuFlash {
         F: FnOnce(&mut FLASH) -> T,
     {
         self.unlock(|flash, _| {
-            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY1) });
-            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY2) });
+            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY[0]) });
+            flash.optkeyr.write(|w| unsafe { w.bits(OPT_KEY[1]) });
 
             // Flash options should unlock on first try. If not we are in an
             // unrecoverable state.

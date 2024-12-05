@@ -247,31 +247,22 @@ impl DfuMemory for DfuFlash {
                 let address1 = (address + idx as u32) as *mut u32;
                 let address2 = (address + 4 + idx as u32) as *mut u32;
 
-                let word1: u32;
-                let word2: u32;
-
-                // Check the data is enough to fill two words. If not, pad the
-                // data with 0xff.
-                // Taken from: https://github.com/stm32-rs/stm32g4xx-hal/blob/main/src/flash.rs
-                if idx + 8 > data.len() {
-                    let mut tmp_buffer = [255u8; 8];
-                    tmp_buffer[idx..data.len()].copy_from_slice(
-                        &data[(idx + idx)..(data.len() + idx)],
-                    );
+                let (word1, word2) = if idx + 8 > data.len() {
+                    // pad writes smaller than double word.
+                    let mut tmp_buffer = [0xff; 8];
+                    let remaining = data.len() - idx;
+                    tmp_buffer[..remaining].copy_from_slice(&data[idx..]);
                     let tmp_dword = u64::from_le_bytes(tmp_buffer);
-                    word1 = tmp_dword as u32;
-                    word2 = (tmp_dword >> 32) as u32;
+                    (tmp_dword as u32, (tmp_dword >> 32) as u32)
                 } else {
-                    word1 = (data[idx] as u32)
-                        | (data[idx + 1] as u32) << 8
-                        | (data[idx + 2] as u32) << 16
-                        | (data[idx + 3] as u32) << 24;
-
-                    word2 = (data[idx + 4] as u32)
-                        | (data[idx + 5] as u32) << 8
-                        | (data[idx + 6] as u32) << 16
-                        | (data[idx + 7] as u32) << 24;
-                }
+                    // convert 8 bytes into two 32-bit words
+                    let bytes1 = &data[idx..idx + 4];
+                    let bytes2 = &data[idx + 4..idx + 8];
+                    (
+                        u32::from_le_bytes(bytes1.try_into().unwrap()),
+                        u32::from_le_bytes(bytes2.try_into().unwrap()),
+                    )
+                };
 
                 f.cr.modify(|_, w| w.pg().set_bit());
 

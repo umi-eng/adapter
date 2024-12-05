@@ -2,18 +2,10 @@
 
 use crate::{dfu::KEY, hal::stm32::FLASH};
 use bitflags::bitflags;
-use core::{convert::Infallible, fmt::Formatter, io::BorrowedBuf, slice};
+use core::{convert::Infallible, fmt::Formatter, slice};
 use defmt::Format;
-use tlvc::{ChunkHeader, TlvcReadError, TlvcReader};
+use tlvc::{TlvcReadError, TlvcReader};
 use zerocopy::{AsBytes, FromBytes, FromZeroes};
-
-static CRC: crc::Crc<u32> = crc::Crc::<u32>::new(&crc::CRC_32_ISCSI);
-
-/// TLV-C chunk tag.
-///
-/// The last character is the version number used by the firmware to track
-/// breaking changes to the VPD.
-pub const TAG: [u8; 4] = *b"VPD0";
 
 /// Vital product data
 #[derive(Debug, Format, AsBytes, FromZeroes, FromBytes)]
@@ -26,50 +18,50 @@ pub struct VitalProductData {
 }
 
 impl VitalProductData {
-    /// Serializes the VPD into the provided buffer in TLV-C format, returning
-    /// the number of bytes written.
-    pub fn serialize(&self, buf: &mut [u8]) -> Result<usize, ()> {
-        let mut borrowed_buf = BorrowedBuf::from(buf);
-        let mut cursor = borrowed_buf.unfilled();
+    /// Read TLV-C product data.
+    ///
+    /// If a tag is not presen, the default value for the type is used.
+    pub fn from_tlvc(buf: &[u8]) -> Result<Self, TlvcReadError<Infallible>> {
+        let mut serial = None;
+        let mut version = None;
+        let mut sku = None;
+        let mut features = None;
 
-        let mut header = ChunkHeader {
-            tag: TAG,
-            len: (core::mem::size_of::<VitalProductData>() as u32).into(),
-            header_checksum: 0.into(), // placeholder until we calculate this.
-        };
-        header.header_checksum = header.compute_checksum().into();
-        cursor.append(header.as_bytes());
+        let mut reader = TlvcReader::begin(buf)?;
+        while let Ok(Some(chunk)) = reader.next() {
+            match &chunk.header().tag {
+                b"SER " => serial = Self::process_chunk(&chunk)?,
+                b"VER " => version = Self::process_chunk(&chunk)?,
+                b"SKU " => sku = Self::process_chunk(&chunk)?,
+                b"FEAT" => features = Self::process_chunk(&chunk)?,
+                _ => {} // do nothing for unknown tags
+            }
+        }
 
-        cursor.append(self.as_bytes());
-
-        let mut digest = CRC.digest();
-        digest.update(self.as_bytes());
-        let data_checksum = digest.finalize();
-        cursor.append(&data_checksum.to_le_bytes());
-
-        Ok(borrowed_buf.len())
+        Ok(Self {
+            serial: serial.unwrap_or_default(),
+            version: version.unwrap_or_default(),
+            sku: sku.unwrap_or_default(),
+            features: features.unwrap_or_default(),
+        })
     }
 
-    /// Attempt to read the VPD from a byte slice.
-    pub fn deserialize(
-        buf: &[u8],
-    ) -> Result<Option<Self>, TlvcReadError<Infallible>> {
-        let mut reader = TlvcReader::begin(buf)?;
-
-        let Some(chunk) = reader.next()? else {
-            return Ok(None);
-        };
-
-        let mut temp = [0; 16];
-        chunk.check_body_checksum(&mut temp)?;
-
-        if chunk.header().tag != TAG {
+    /// Process a TLV-C chunk, unmarshalling the given type from the data or
+    /// returning `None` if that fails.
+    fn process_chunk<T: FromBytes + AsBytes + FromZeroes>(
+        chunk: &tlvc::ChunkHandle<&[u8]>,
+    ) -> Result<Option<T>, TlvcReadError<Infallible>> {
+        if chunk.len() as usize != core::mem::size_of::<T>() {
+            defmt::error!("Chunk length {} incorrect.", chunk.len());
             return Ok(None);
         }
 
-        let mut this = VitalProductData::new_zeroed();
-        chunk.read_exact(0, this.as_bytes_mut())?;
-        Ok(Some(this))
+        let mut checksum_buf = [0; 2];
+        chunk.check_body_checksum(&mut checksum_buf)?;
+
+        let mut out = T::new_zeroed();
+        chunk.read_exact(0, out.as_bytes_mut())?;
+        Ok(Some(out))
     }
 }
 
@@ -80,6 +72,16 @@ pub struct Serial {
     pub year: u8,
     pub week: u8,
     pub seq: u16,
+}
+
+impl Default for Serial {
+    fn default() -> Self {
+        Self {
+            year: 99,
+            week: 99,
+            seq: 0x9999,
+        }
+    }
 }
 
 impl Serial {
@@ -114,6 +116,17 @@ pub struct Version {
     pub pre: u8,
 }
 
+impl Default for Version {
+    fn default() -> Self {
+        Self {
+            major: 0,
+            minor: 0,
+            patch: 0,
+            pre: 0,
+        }
+    }
+}
+
 impl Version {
     /// Assert size at compile time.
     const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
@@ -143,6 +156,12 @@ impl defmt::Format for Version {
 #[repr(C)]
 pub struct Sku([u8; 4]);
 
+impl Default for Sku {
+    fn default() -> Self {
+        Self([b'N', b'O', b'N', b'E'])
+    }
+}
+
 impl Sku {
     /// Assert size at compile time
     const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
@@ -163,7 +182,7 @@ impl Sku {
 
 /// Optional features that may be present on the board.
 /// Up to 16 unique features are supported by this field.
-#[derive(Debug, Format, AsBytes, FromZeroes, FromBytes)]
+#[derive(Debug, Default, Format, AsBytes, FromZeroes, FromBytes)]
 #[repr(C)]
 pub struct Features(u32);
 
@@ -190,7 +209,7 @@ pub fn read_otp() -> &'static [u8] {
 /// Write data to OTP memory.
 pub fn write_otp(
     flash: &mut FLASH,
-    data: &mut &[u8],
+    data: &[u8],
     offset: usize,
 ) -> Result<(), ()> {
     if data.len() + offset > OTP_LEN {

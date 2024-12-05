@@ -44,6 +44,7 @@ use usb_device::{
 };
 use usbd_dfu::DfuClass;
 use usbd_gscan::{host::FrameFlag, GsCan};
+use vpd::VitalProductData;
 
 systick_monotonic!(Mono, 10_000);
 defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
@@ -73,7 +74,7 @@ mod app {
     }
 
     #[init]
-    fn init(cx: init::Context) -> (Shared, Local) {
+    fn init(mut cx: init::Context) -> (Shared, Local) {
         defmt::info!(
             "name={} version={} git_hash={} built_at={}",
             env!("CARGO_PKG_NAME"),
@@ -117,14 +118,14 @@ mod app {
             wd
         };
 
-        let vpd = {
-            vpd::VitalProductData {
-                serial: vpd::Serial::new(24, 1, 1),
-                version: vpd::Version::new(0, 3, 1, 0),
-                sku: vpd::Sku::new(*b"M2FD"),
-                features: vpd::Features::empty(),
-            }
-        };
+        if option_env!("WRITE_VPD").is_some() {
+            let raw_vpd = include_bytes!(concat!(env!("OUT_DIR"), "/vpd.bin"));
+            // check VPD parses correctly.
+            VitalProductData::from_tlvc(raw_vpd).unwrap();
+            vpd::write_otp(&mut cx.device.FLASH, raw_vpd, 0).unwrap();
+        }
+
+        let vpd = VitalProductData::from_tlvc(vpd::read_otp()).unwrap();
 
         let gpioa = cx.device.GPIOA.split(&mut rcc);
         let gpiob = cx.device.GPIOB.split(&mut rcc);

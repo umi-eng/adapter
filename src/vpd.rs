@@ -1,5 +1,6 @@
 //! Vital product data.
 
+use crate::{dfu::KEY, hal::stm32::FLASH};
 use bitflags::bitflags;
 use core::{convert::Infallible, fmt::Formatter, io::BorrowedBuf, slice};
 use defmt::Format;
@@ -177,11 +178,38 @@ bitflags! {
     }
 }
 
+const OTP_LEN: usize = 1024; // 1 kilobyte
+const OTP_ADDRESS: *const u8 = 0x1FFF7000 as *const u8;
+
 /// Reads the 1 kilobyte of OTP memory.
 #[allow(unused)]
 pub fn read_otp() -> &'static [u8] {
-    const OTP_ADDRESS: *const u8 = 0x1FFF7000 as *const u8;
-    const SLICE_LENGTH: usize = 1024; // 1 kilobyte
+    unsafe { slice::from_raw_parts(OTP_ADDRESS, OTP_LEN) }
+}
 
-    unsafe { slice::from_raw_parts(OTP_ADDRESS, SLICE_LENGTH) }
+/// Write data to OTP memory.
+pub fn write_otp(
+    flash: &mut FLASH,
+    data: &mut &[u8],
+    offset: usize,
+) -> Result<(), ()> {
+    if data.len() + offset > OTP_LEN {
+        return Err(());
+    }
+
+    // unlock flash writing.
+    flash.keyr.write(|w| unsafe { w.bits(KEY[0]) });
+    flash.keyr.write(|w| unsafe { w.bits(KEY[1]) });
+
+    // check unlock worked.
+    if flash.cr.read().lock().bit() {
+        panic!("Flash is still locked.");
+    }
+
+    defmt::info!("Pretend write!: {:x}", data);
+
+    // lock flash
+    flash.cr.modify(|_, w| w.lock().set_bit());
+
+    Ok(())
 }

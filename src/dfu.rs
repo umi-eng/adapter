@@ -4,7 +4,7 @@ use crate::hal::stm32::FLASH;
 use core::ops::RangeInclusive;
 use usbd_dfu::*;
 
-const KEY: [u32; 2] = [0x4567_0123, 0xCDEF_89AB];
+pub const KEY: [u32; 2] = [0x4567_0123, 0xCDEF_89AB];
 const OPT_KEY: [u32; 2] = [0x0819_2A3B, 0x4C5D_6E7F];
 const FLASH_MEMORY: RangeInclusive<u32> = 0x0800_0000..=0x0803_FFFF;
 const BANK2_OFFSET: u32 = 0x00040000;

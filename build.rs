@@ -2,11 +2,25 @@ use chrono::{DateTime, SecondsFormat, Utc};
 use std::{
     fs::File, io::Write, path::PathBuf, process::Command, time::SystemTime,
 };
+use tlvc_text::{load, pack};
 
 fn main() {
+    // Get out directory.
+    let out = &PathBuf::from(std::env::var_os("OUT_DIR").unwrap());
+
+    // Optionally inject vital product data.
+    println!("cargo:rerun-if-changed=vpd.ron");
+    if let Some(path) = option_env!("WRITE_VPD") {
+        let vpd_file = File::open(path).unwrap();
+        let vpd = pack(&load(vpd_file).unwrap());
+        File::create(out.join("vpd.bin"))
+            .unwrap()
+            .write_all(&vpd)
+            .unwrap();
+    }
+
     // put `memory.x` in our output directory and ensure it's on the linker
     // search path.
-    let out = &PathBuf::from(std::env::var_os("OUT_DIR").unwrap());
     File::create(out.join("memory.x"))
         .unwrap()
         .write_all(include_bytes!("memory.x"))

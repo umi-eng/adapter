@@ -34,3 +34,4 @@ nb = "1.1.0"
 
 [build-dependencies]
 chrono = "0.4.38"
+tlvc-text = { git = "https://github.com/umi-eng/tlvc.git", rev = "27f0f4a", version = "0.3.0" }

@@ -216,6 +216,14 @@ pub fn write_otp(
         return Err(OtpWriteError::PayloadSize);
     }
 
+    // check otp is blank.
+    let otp = &read_otp()[offset..data.len() + offset];
+    for byte in otp {
+        if *byte != 0xff {
+            return Err(OtpWriteError::Occupied);
+        }
+    }
+
     // unlock flash writing.
     flash.keyr.write(|w| unsafe { w.bits(KEY[0]) });
     flash.keyr.write(|w| unsafe { w.bits(KEY[1]) });
@@ -234,8 +242,10 @@ pub fn write_otp(
 }
 
 /// OTP memory write error.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Format, Clone, Copy, PartialEq, Eq)]
 pub enum OtpWriteError {
     /// Payload will not fit in OTP.
     PayloadSize,
+    /// Memory region is already occupied.
+    Occupied,
 }

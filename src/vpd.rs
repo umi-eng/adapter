@@ -211,9 +211,9 @@ pub fn write_otp(
     flash: &mut FLASH,
     data: &[u8],
     offset: usize,
-) -> Result<(), ()> {
+) -> Result<(), OtpWriteError> {
     if data.len() + offset > OTP_LEN {
-        return Err(());
+        return Err(OtpWriteError::PayloadSize);
     }
 
     // unlock flash writing.
@@ -231,4 +231,11 @@ pub fn write_otp(
     flash.cr.modify(|_, w| w.lock().set_bit());
 
     Ok(())
+}
+
+/// OTP memory write error.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OtpWriteError {
+    /// Payload will not fit in OTP.
+    PayloadSize,
 }

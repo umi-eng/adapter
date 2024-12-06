@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bitflags = "2.6.0"
 defmt = "0.3.8"
 defmt-rtt = "0.4.1"
 fdcan = { version = "0.2.0", features = ["fdcan_g0_g4_l5"] }
@@ -14,7 +13,6 @@ rtic-monotonics = { version = "2.0.2", features = [
     "cortex-m-systick",
     "systick-64bit",
 ] }
-rtic-sync = "1.3.0"
 stm32g4xx-hal = { version = "0.0.2", features = [
     "stm32g474",
     "usb",
@@ -28,7 +26,6 @@ usbd-gscan = { git = "https://github.com/umi-eng/usbd-gscan.git", version = "0.1
 usbd-dfu = { version = "0.4.0", git = "https://github.com/umi-eng/usbd-dfu" }
 static_cell = "2.1.0"
 embedded-can = "0.4.1"
-crc = "3.2.1"
 heapless = "0.8.0"
 nb = "1.1.0"
 

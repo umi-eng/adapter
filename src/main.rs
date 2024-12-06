@@ -122,7 +122,9 @@ mod app {
             let raw_vpd = include_bytes!(concat!(env!("OUT_DIR"), "/vpd.bin"));
             // check VPD parses correctly.
             VitalProductData::from_tlvc(raw_vpd).unwrap();
-            vpd::write_otp(&mut cx.device.FLASH, raw_vpd, 0).unwrap();
+            if let Err(e) = vpd::write_otp(&mut cx.device.FLASH, raw_vpd, 0) {
+                defmt::error!("{}", e);
+            }
         }
 
         let vpd = VitalProductData::from_tlvc(vpd::read_otp()).unwrap();

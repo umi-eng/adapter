@@ -1,7 +1,6 @@
 //! Vital product data.
 
 use crate::{dfu::KEY, hal::stm32::FLASH};
-use bitflags::bitflags;
 use core::{convert::Infallible, fmt::Formatter, slice};
 use defmt::Format;
 use tlvc::{TlvcReadError, TlvcReader};
@@ -13,8 +12,6 @@ use zerocopy::{AsBytes, FromBytes, FromZeroes};
 pub struct VitalProductData {
     pub serial: Serial,
     pub version: Version,
-    pub sku: Sku,
-    pub features: Features,
 }
 
 impl VitalProductData {
@@ -24,16 +21,12 @@ impl VitalProductData {
     pub fn from_tlvc(buf: &[u8]) -> Result<Self, TlvcReadError<Infallible>> {
         let mut serial = None;
         let mut version = None;
-        let mut sku = None;
-        let mut features = None;
 
         let mut reader = TlvcReader::begin(buf)?;
         while let Ok(Some(chunk)) = reader.next() {
             match &chunk.header().tag {
                 b"SER " => serial = Self::process_chunk(&chunk)?,
                 b"VER " => version = Self::process_chunk(&chunk)?,
-                b"SKU " => sku = Self::process_chunk(&chunk)?,
-                b"FEAT" => features = Self::process_chunk(&chunk)?,
                 _ => {} // do nothing for unknown tags
             }
         }
@@ -41,8 +34,6 @@ impl VitalProductData {
         Ok(Self {
             serial: serial.unwrap_or_default(),
             version: version.unwrap_or_default(),
-            sku: sku.unwrap_or_default(),
-            features: features.unwrap_or_default(),
         })
     }
 
@@ -148,52 +139,6 @@ impl defmt::Format for Version {
         if self.pre != 0 {
             defmt::write!(fmt, "-rc.{}", self.pre);
         }
-    }
-}
-
-/// Product variant.
-#[derive(Debug, Format, AsBytes, FromBytes, FromZeroes)]
-#[repr(C)]
-pub struct Sku([u8; 4]);
-
-impl Default for Sku {
-    fn default() -> Self {
-        Self([b'N', b'O', b'N', b'E'])
-    }
-}
-
-impl Sku {
-    /// Assert size at compile time
-    const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
-
-    /// Create a new sku.
-    ///
-    /// The id provided must be valid ASCII.
-    pub fn new(id: [u8; 4]) -> Self {
-        assert!(id.is_ascii());
-        Self(id)
-    }
-
-    /// Get product variant id.
-    pub fn id(&self) -> [u8; 4] {
-        self.0
-    }
-}
-
-/// Optional features that may be present on the board.
-/// Up to 16 unique features are supported by this field.
-#[derive(Debug, Default, Format, AsBytes, FromZeroes, FromBytes)]
-#[repr(C)]
-pub struct Features(u32);
-
-impl Features {
-    /// Assert size at compile time.
-    const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
-}
-
-bitflags! {
-    impl Features: u32 {
-        const Test = 1 << 0;
     }
 }
 

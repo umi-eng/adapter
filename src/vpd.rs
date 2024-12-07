@@ -98,24 +98,13 @@ impl core::fmt::Display for Serial {
 }
 
 /// Semantic version number.
-#[derive(Debug, AsBytes, FromZeroes, FromBytes)]
+#[derive(Debug, Default, AsBytes, FromZeroes, FromBytes)]
 #[repr(C)]
 pub struct Version {
     pub major: u8,
     pub minor: u8,
     pub patch: u8,
     pub pre: u8,
-}
-
-impl Default for Version {
-    fn default() -> Self {
-        Self {
-            major: 0,
-            minor: 0,
-            patch: 0,
-            pre: 0,
-        }
-    }
 }
 
 impl Version {

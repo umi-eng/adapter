@@ -17,6 +17,12 @@ fn main() {
             .unwrap()
             .write_all(&vpd)
             .unwrap();
+    } else {
+        // write empty file to satisfy clippy.
+        File::create(out.join("vpd.bin"))
+            .unwrap()
+            .set_len(0)
+            .unwrap();
     }
 
     // put `memory.x` in our output directory and ensure it's on the linker

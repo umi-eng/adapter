@@ -7,7 +7,7 @@ use tlvc::{TlvcReadError, TlvcReader};
 use zerocopy::{AsBytes, FromBytes, FromZeroes};
 
 /// Vital product data
-#[derive(Debug, Format, AsBytes, FromZeroes, FromBytes)]
+#[derive(Debug, Format)]
 #[repr(C)]
 pub struct VitalProductData {
     pub serial: Serial,

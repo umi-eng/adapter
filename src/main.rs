@@ -4,6 +4,7 @@
 
 mod can;
 mod dfu;
+mod otp;
 mod vpd;
 
 use defmt_rtt as _;
@@ -122,12 +123,12 @@ mod app {
             let raw_vpd = include_bytes!(concat!(env!("OUT_DIR"), "/vpd.bin"));
             // check VPD parses correctly.
             VitalProductData::from_tlvc(raw_vpd).unwrap();
-            if let Err(e) = vpd::write_otp(&mut cx.device.FLASH, raw_vpd, 0) {
+            if let Err(e) = otp::write(&mut cx.device.FLASH, raw_vpd, 0) {
                 defmt::error!("{}", e);
             }
         }
 
-        let vpd = VitalProductData::from_tlvc(vpd::read_otp()).unwrap();
+        let vpd = VitalProductData::from_tlvc(otp::read()).unwrap();
 
         let gpioa = cx.device.GPIOA.split(&mut rcc);
         let gpiob = cx.device.GPIOB.split(&mut rcc);

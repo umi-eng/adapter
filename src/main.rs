@@ -131,7 +131,7 @@ mod app {
         let vpd = VitalProductData::from_tlvc(otp::read()).unwrap();
 
         defmt::info!(
-            "serial={} version={} sku={}",
+            "serial={} hardware={} sku={}",
             vpd.serial,
             vpd.hardware,
             vpd.sku,

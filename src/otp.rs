@@ -36,7 +36,39 @@ pub fn write(
         panic!("Flash is still locked.");
     }
 
-    defmt::info!("Pretend write!: {:x}", data);
+    let address = OTP_ADDRESS as u32 + offset as u32;
+
+    for idx in (0..data.len()).step_by(8) {
+        let address1 = (address + idx as u32) as *mut u32;
+        let address2 = (address + 4 + idx as u32) as *mut u32;
+
+        let (word1, word2) = if idx + 8 > data.len() {
+            // pad writes smaller than double word.
+            let mut tmp_buffer = [0xff; 8];
+            let remaining = data.len() - idx;
+            tmp_buffer[..remaining].copy_from_slice(&data[idx..]);
+            let tmp_dword = u64::from_le_bytes(tmp_buffer);
+            (tmp_dword as u32, (tmp_dword >> 32) as u32)
+        } else {
+            // convert 8 bytes into two 32-bit words
+            let bytes1 = &data[idx..idx + 4];
+            let bytes2 = &data[idx + 4..idx + 8];
+            (
+                u32::from_le_bytes(bytes1.try_into().unwrap()),
+                u32::from_le_bytes(bytes2.try_into().unwrap()),
+            )
+        };
+
+        flash.cr.modify(|_, w| w.pg().set_bit());
+
+        // wait while busy
+        while flash.sr.read().bsy().bit_is_set() {}
+
+        unsafe {
+            core::ptr::write_volatile(address1, word1);
+            core::ptr::write_volatile(address2, word2);
+        }
+    }
 
     // lock flash
     flash.cr.modify(|_, w| w.lock().set_bit());

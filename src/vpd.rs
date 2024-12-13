@@ -10,7 +10,7 @@ use zerocopy::{AsBytes, FromBytes, FromZeroes};
 #[repr(C)]
 pub struct VitalProductData {
     pub serial: Serial,
-    pub version: Version,
+    pub hardware: Version,
 }
 
 impl VitalProductData {
@@ -25,14 +25,14 @@ impl VitalProductData {
         while let Ok(Some(chunk)) = reader.next() {
             match &chunk.header().tag {
                 b"SER " => serial = Self::process_chunk(&chunk)?,
-                b"VER " => version = Self::process_chunk(&chunk)?,
+                b"HW  " => version = Self::process_chunk(&chunk)?,
                 _ => {} // do nothing for unknown tags
             }
         }
 
         Ok(Self {
             serial: serial.unwrap_or_default(),
-            version: version.unwrap_or_default(),
+            hardware: version.unwrap_or_default(),
         })
     }
 

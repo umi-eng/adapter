@@ -11,6 +11,7 @@ use zerocopy::{AsBytes, FromBytes, FromZeroes};
 pub struct VitalProductData {
     pub serial: Serial,
     pub hardware: Version,
+    pub sku: Sku,
 }
 
 impl VitalProductData {
@@ -20,12 +21,14 @@ impl VitalProductData {
     pub fn from_tlvc(buf: &[u8]) -> Result<Self, TlvcReadError<Infallible>> {
         let mut serial = None;
         let mut version = None;
+        let mut sku: Option<u8> = None;
 
         let mut reader = TlvcReader::begin(buf)?;
         while let Ok(Some(chunk)) = reader.next() {
             match &chunk.header().tag {
                 b"SER " => serial = Self::process_chunk(&chunk)?,
                 b"HW  " => version = Self::process_chunk(&chunk)?,
+                b"SKU " => sku = Self::process_chunk(&chunk)?,
                 _ => {} // do nothing for unknown tags
             }
         }
@@ -33,6 +36,7 @@ impl VitalProductData {
         Ok(Self {
             serial: serial.unwrap_or_default(),
             hardware: version.unwrap_or_default(),
+            sku: Sku::from(sku.unwrap_or_default()),
         })
     }
 
@@ -126,6 +130,41 @@ impl defmt::Format for Version {
         defmt::write!(fmt, "{}.{}.{}", self.major, self.minor, self.patch);
         if self.pre != 0 {
             defmt::write!(fmt, "-rc.{}", self.pre);
+        }
+    }
+}
+
+/// SKU identity
+#[derive(Debug, Format)]
+#[repr(u8)]
+pub enum SkuId {
+    M2KeyE = 1,
+    MiniPCIe = 2,
+}
+
+impl TryFrom<u8> for SkuId {
+    type Error = u8;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            x if x == Self::M2KeyE as u8 => Ok(Self::M2KeyE),
+            x if x == Self::MiniPCIe as u8 => Ok(Self::MiniPCIe),
+            _ => Err(value),
+        }
+    }
+}
+
+#[derive(Debug, Format)]
+pub enum Sku {
+    Known(SkuId),
+    Unknown(u8),
+}
+
+impl From<u8> for Sku {
+    fn from(value: u8) -> Self {
+        match SkuId::try_from(value) {
+            Ok(sku) => Self::Known(sku),
+            Err(sku) => Self::Unknown(sku),
         }
     }
 }

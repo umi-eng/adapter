@@ -130,6 +130,13 @@ mod app {
 
         let vpd = VitalProductData::from_tlvc(otp::read()).unwrap();
 
+        defmt::info!(
+            "serial={} version={} sku={}",
+            vpd.serial,
+            vpd.hardware,
+            vpd.sku,
+        );
+
         let gpioa = cx.device.GPIOA.split(&mut rcc);
         let gpiob = cx.device.GPIOB.split(&mut rcc);
 

@@ -247,8 +247,6 @@ mod app {
 
     #[task(binds = USB_HP, shared = [usb_dev, usb_can, usb_dfu])]
     fn usb_hp(cx: usb_hp::Context) {
-        defmt::trace!("USB high prio.");
-
         (cx.shared.usb_dev, cx.shared.usb_can, cx.shared.usb_dfu).lock(
             |usb_dev, usb_can, usb_dfu| {
                 usb_dev.poll(&mut [usb_can, usb_dfu]);
@@ -258,8 +256,6 @@ mod app {
 
     #[task(binds = USB_LP, shared = [usb_dev, usb_can, usb_dfu])]
     fn usb_lp(cx: usb_lp::Context) {
-        defmt::trace!("USB low prio.");
-
         (cx.shared.usb_dev, cx.shared.usb_can, cx.shared.usb_dfu).lock(
             |usb_dev, usb_can, usb_dfu| {
                 usb_dev.poll(&mut [usb_can, usb_dfu]);

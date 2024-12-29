@@ -89,11 +89,11 @@ mod app {
             hal::rcc::Config::new(hal::rcc::SysClockSrc::PLL)
                 .pll_cfg(PllConfig {
                     mux: PllSrc::HSE(24.MHz()),
-                    m: PllMDiv::DIV_1,
-                    n: PllNMul::MUL_10,
+                    m: PllMDiv::DIV_3,
+                    n: PllNMul::MUL_60,
                     p: None,
-                    q: Some(PllQDiv::DIV_4),
-                    r: Some(PllRDiv::DIV_2),
+                    q: Some(PllQDiv::DIV_6),
+                    r: Some(PllRDiv::DIV_4),
                 })
                 .ahb_psc(Prescaler::NotDivided)
                 .fdcan_src(FdCanClockSource::PLLQ),
@@ -101,13 +101,20 @@ mod app {
         );
         rcc.enable_hsi48();
 
+        // Ensure clocks match our spec.
+        // Using debug_assert so release builds don't panic on startup
+        // potentially bricking a device.
+        defmt::debug_assert_eq!(rcc.clocks.core_clk.to_MHz(), 120);
+        defmt::debug_assert_eq!(rcc.clocks.sys_clk.to_MHz(), 120);
+        defmt::debug_assert_eq!(rcc.clocks.pll_clk.q.unwrap().to_MHz(), 80);
+        defmt::debug_assert_eq!(rcc.clocks.pll_clk.r.unwrap().to_MHz(), 120);
+
         defmt::info!(
             "core_clock={}MHz sys_clock={}MHz pll_q_clock={}MHz pll_r_clock={}MHz",
             rcc.clocks.core_clk.to_MHz(),
             rcc.clocks.sys_clk.to_MHz(),
             rcc.clocks.pll_clk.q.unwrap().to_MHz(),
             rcc.clocks.pll_clk.r.unwrap().to_MHz(),
-
         );
 
         Mono::start(cx.core.SYST, rcc.clocks.sys_clk.to_Hz());

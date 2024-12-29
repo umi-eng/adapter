@@ -29,7 +29,7 @@ use hal::{
     },
     independent_watchdog::IndependentWatchdog,
     prelude::*,
-    pwr::PwrExt,
+    pwr::{PwrExt, VoltageScale},
     rcc::{
         FdCanClockSource, PllConfig, PllMDiv, PllNMul, PllQDiv, PllRDiv,
         PllSrc, Prescaler,
@@ -83,17 +83,22 @@ mod app {
             env!("CRATE_BUILT_AT"),
         );
 
-        let pwr = cx.device.PWR.constrain().freeze();
+        let pwr = cx
+            .device
+            .PWR
+            .constrain()
+            .vos(VoltageScale::Range1 { enable_boost: true })
+            .freeze();
         let rcc = cx.device.RCC.constrain();
         let mut rcc = rcc.freeze(
             hal::rcc::Config::new(hal::rcc::SysClockSrc::PLL)
                 .pll_cfg(PllConfig {
                     mux: PllSrc::HSE(24.MHz()),
-                    m: PllMDiv::DIV_3,
-                    n: PllNMul::MUL_60,
+                    m: PllMDiv::DIV_6,
+                    n: PllNMul::MUL_80,
                     p: None,
-                    q: Some(PllQDiv::DIV_6),
-                    r: Some(PllRDiv::DIV_4),
+                    q: Some(PllQDiv::DIV_4),
+                    r: Some(PllRDiv::DIV_2),
                 })
                 .ahb_psc(Prescaler::NotDivided)
                 .fdcan_src(FdCanClockSource::PLLQ),
@@ -104,10 +109,10 @@ mod app {
         // Ensure clocks match our spec.
         // Using debug_assert so release builds don't panic on startup
         // potentially bricking a device.
-        defmt::debug_assert_eq!(rcc.clocks.core_clk.to_MHz(), 120);
-        defmt::debug_assert_eq!(rcc.clocks.sys_clk.to_MHz(), 120);
+        defmt::debug_assert_eq!(rcc.clocks.core_clk.to_MHz(), 160);
+        defmt::debug_assert_eq!(rcc.clocks.sys_clk.to_MHz(), 160);
         defmt::debug_assert_eq!(rcc.clocks.pll_clk.q.unwrap().to_MHz(), 80);
-        defmt::debug_assert_eq!(rcc.clocks.pll_clk.r.unwrap().to_MHz(), 120);
+        defmt::debug_assert_eq!(rcc.clocks.pll_clk.r.unwrap().to_MHz(), 160);
 
         defmt::info!(
             "core_clock={}MHz sys_clock={}MHz pll_q_clock={}MHz pll_r_clock={}MHz",

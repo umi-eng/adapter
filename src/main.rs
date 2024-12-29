@@ -120,6 +120,11 @@ mod app {
             rcc.clocks.pll_clk.r.unwrap().to_MHz(),
         );
 
+        if rcc.get_reset_reason().independent_watchdog {
+            defmt::info!("reset_cause=watchdog");
+        }
+        rcc.clear_reset_reason();
+
         Mono::start(cx.core.SYST, rcc.clocks.sys_clk.to_Hz());
 
         let watchdog = {

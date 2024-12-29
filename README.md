@@ -12,7 +12,7 @@ Based on the gs_usb protocol, this firmware is plug and play on most recent linu
 | One-shot                      | Yes        |
 | Bus error reporting           | No         |
 | FD (ISO 11898-1:2015)         | Yes        |
-| FD Non-ISO mode               | Yes        |
+| FD Non-ISO mode               | No         |
 | Presume ACK                   | No         |
 | Classic CAN length 8 DLC      | No         |
 | Transceiver dely compensation | No         |

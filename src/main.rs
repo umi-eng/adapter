@@ -15,9 +15,7 @@ use stm32g4xx_hal as hal;
 use can::id_to_embedded;
 use embedded_can::Frame;
 use fdcan::{
-    config::{
-        FrameTransmissionConfig, Interrupt, Interrupts, NominalBitTiming,
-    },
+    config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
 };
 use fugit::ExtU32;

@@ -73,7 +73,7 @@ impl Device for UsbCanDevice {
 
     fn bit_timing(&self) -> DeviceBitTimingConst {
         DeviceBitTimingConst {
-            features: Feature::FD | Feature::BT_CONST_EXT,
+            features: Feature::FD | Feature::BT_CONST_EXT | Feature::ONE_SHOT,
             fclk_can: self.clock.to_Hz(),
             timing: TIMING_NOMINAL,
         }
@@ -81,7 +81,7 @@ impl Device for UsbCanDevice {
 
     fn bit_timing_ext(&self) -> DeviceBitTimingConstExtended {
         DeviceBitTimingConstExtended {
-            features: Feature::FD | Feature::BT_CONST_EXT,
+            features: Feature::FD | Feature::BT_CONST_EXT | Feature::ONE_SHOT,
             fclk_can: self.clock.to_Hz(),
             timing_nominal: TIMING_NOMINAL,
             timing_data: TIMING_DATA,
@@ -175,20 +175,28 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn start(&mut self, interface: u8) {
+    fn start(&mut self, interface: u8, features: Feature) {
         match interface {
             0 => {
-                if let Some(mut can) = self.can1.take() {
+                if let Some(can) = self.can1.take() {
+                    let mut can = can.into_config_mode();
+                    can.set_automatic_retransmit(
+                        features.contains(Feature::ONE_SHOT),
+                    );
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
-                    self.can1.replace(can);
+                    self.can1.replace(can.into_normal());
                 }
             }
             1 => {
-                if let Some(mut can) = self.can2.take() {
+                if let Some(can) = self.can2.take() {
+                    let mut can = can.into_config_mode();
+                    can.set_automatic_retransmit(
+                        features.contains(Feature::ONE_SHOT),
+                    );
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
-                    self.can2.replace(can);
+                    self.can2.replace(can.into_normal());
                 }
             }
             _ => defmt::error!("Interface {} not in use", interface),

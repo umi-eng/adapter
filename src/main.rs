@@ -140,13 +140,6 @@ mod app {
         let gpioa = cx.device.GPIOA.split(&mut rcc);
         let gpiob = cx.device.GPIOB.split(&mut rcc);
 
-        let btr = NominalBitTiming {
-            prescaler: NonZeroU16::new(12).unwrap(),
-            seg1: NonZeroU8::new(13).unwrap(),
-            seg2: NonZeroU8::new(2).unwrap(),
-            sync_jump_width: NonZeroU8::new(1).unwrap(),
-        };
-
         let fdcan2 = {
             let rx = gpiob.pb5.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb6.into_alternate().set_speed(Speed::VeryHigh);
@@ -155,7 +148,6 @@ mod app {
 
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
-            can.set_nominal_bit_timing(btr);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,
@@ -172,7 +164,6 @@ mod app {
 
             can.set_protocol_exception_handling(false);
             can.set_automatic_retransmit(false);
-            can.set_nominal_bit_timing(btr);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(
                 Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG,

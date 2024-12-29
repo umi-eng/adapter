@@ -13,7 +13,6 @@ use panic_probe as _;
 use stm32g4xx_hal as hal;
 
 use can::id_to_embedded;
-use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::Frame;
 use fdcan::{
     config::{

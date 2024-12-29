@@ -32,7 +32,7 @@ use hal::{
     pwr::PwrExt,
     rcc::{
         FdCanClockSource, PllConfig, PllMDiv, PllNMul, PllQDiv, PllRDiv,
-        Prescaler,
+        PllSrc, Prescaler,
     },
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
@@ -88,7 +88,7 @@ mod app {
         let mut rcc = rcc.freeze(
             hal::rcc::Config::new(hal::rcc::SysClockSrc::PLL)
                 .pll_cfg(PllConfig {
-                    mux: stm32g4xx_hal::rcc::PllSrc::HSE(24.MHz()),
+                    mux: PllSrc::HSE(24.MHz()),
                     m: PllMDiv::DIV_1,
                     n: PllNMul::MUL_10,
                     p: None,

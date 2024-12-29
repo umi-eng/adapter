@@ -121,7 +121,7 @@ mod app {
 
         let watchdog = {
             let mut wd = IndependentWatchdog::new(cx.device.IWDG);
-            wd.start(500_u32.millis());
+            wd.start(1_u32.secs());
             wd
         };
 
@@ -238,7 +238,7 @@ mod app {
             // Feed watchdog periodically.
             cx.local.watchdog.feed();
             defmt::trace!("Fed watchdog.");
-            Mono::delay(100_u64.millis()).await;
+            Mono::delay(500_u64.millis()).await;
         }
     }
 

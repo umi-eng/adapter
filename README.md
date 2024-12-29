@@ -37,7 +37,31 @@ The latest firmware is available on the GitHub [releases page](https://github.co
 dfu-util -s 0x08000000:leave -D <new-firmware>.bin
 ```
 
-## Releasing
+## Development
+
+Prerequisites:
+
+- [Rust](https://www.rust-lang.org/tools/install) with the `thumbv7em-none-eabihf` target
+- [probe-rs](https://probe.rs/)
+- [flip-link](https://github.com/knurling-rs/flip-link?tab=readme-ov-file#installation)
+
+### Debug
+
+```shell
+cargo run
+```
+
+### Build
+
+```shell
+cargo build --release
+# Output firmware binary
+cargo objcopy --release -- -O binary firmware.bin
+# Prepare for DFU upload
+dfu-suffix --vid 1209 --pid 2323 --add firmware.bin
+```
+
+### Release
 
 Bump the version number in the `Cargo.toml` and then tag the desired commit with the version number and push to `main`.
 

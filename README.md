@@ -4,6 +4,19 @@ A single unified codebase for CAN adapters in many form factors.
 
 Based on the gs_usb protocol, this firmware is plug and play on most recent linux systems.
 
+| Feature                       | Supported? |
+| ----------------------------- | ---------- |
+| Loopback                      | No         |
+| Listen-only                   | No         |
+| Tripple-sampling              | No         |
+| One-shot                      | Yes        |
+| Bus error reporting           | No         |
+| FD (ISO 11898-1:2015)         | Yes        |
+| FD Non-ISO mode               | Yes        |
+| Presume ACK                   | No         |
+| Classic CAN length 8 DLC      | No         |
+| Transceiver dely compensation | No         |
+
 ## Purchase
 
 You can purchase CAN FD Adapters from our [online store](https://umi.engineering/products/can-fd-adapter).

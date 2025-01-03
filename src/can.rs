@@ -242,17 +242,15 @@ impl Device for UsbCanDevice {
         match interface {
             0 => {
                 if let Some(can) = &mut self.can1 {
-                    nb::block!(can.transmit(header, frame.data())).unwrap();
+                    can.transmit(header, frame.data()).ok();
                 }
             }
             1 => {
                 if let Some(can) = &mut self.can2 {
-                    nb::block!(can.transmit(header, frame.data())).unwrap();
+                    can.transmit(header, frame.data()).ok();
                 }
             }
-            i => {
-                defmt::error!("Interface {} not in use.", i);
-            }
+            _ => {}
         }
     }
 }

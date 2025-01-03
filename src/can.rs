@@ -181,7 +181,7 @@ impl Device for UsbCanDevice {
                 if let Some(can) = self.can1.take() {
                     let mut can = can.into_config_mode();
                     can.set_automatic_retransmit(
-                        !features.contains(Feature::ONE_SHOT),
+                        !features.intersects(Feature::ONE_SHOT),
                     );
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
@@ -192,7 +192,7 @@ impl Device for UsbCanDevice {
                 if let Some(can) = self.can2.take() {
                     let mut can = can.into_config_mode();
                     can.set_automatic_retransmit(
-                        !features.contains(Feature::ONE_SHOT),
+                        !features.intersects(Feature::ONE_SHOT),
                     );
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);

@@ -224,7 +224,7 @@ impl Device for UsbCanDevice {
         }
     }
 
-    fn receive(&mut self, interface: u8, frame: usbd_gscan::host::Frame) {
+    fn receive(&mut self, interface: u8, frame: &usbd_gscan::host::Frame) {
         let header = TxFrameHeader {
             len: frame.data().len() as u8,
             frame_format: if frame.flags.intersects(FrameFlag::FD) {

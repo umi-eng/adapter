@@ -820,7 +820,7 @@ dependencies = [
 [[package]]
 name = "usbd-gscan"
 version = "0.1.0"
-source = "git+https://github.com/umi-eng/usbd-gscan.git#161470dd3f5660186c3cad4ca30a0bfadd1e4408"
+source = "git+https://github.com/umi-eng/usbd-gscan.git#8d2db8921847e1e6f8af58e5bbe8da4d0d0d3ed1"
 dependencies = [
  "bitflags 2.6.0",
  "defmt",

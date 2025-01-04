@@ -39,7 +39,7 @@ const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
     tset2_max: 15,
     sjw_max: 15,
     brp_min: 1,
-    brp_max: 15,
+    brp_max: 31,
     brp_inc: 1,
 };
 

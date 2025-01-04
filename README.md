@@ -4,21 +4,23 @@ A single unified codebase for CAN adapters in many form factors.
 
 Based on the gs_usb protocol, this firmware is plug and play on most recent linux systems.
 
-| Feature                       | Supported?      |
-| ----------------------------- | --------------- |
-| Loopback                      | No              |
-| Listen-only                   | No              |
-| Tripple-sampling              | No              |
-| One-shot                      | Yes             |
-| Hardware timestamp            | No              |
-| Bus error reporting           | No              |
-| FD (ISO 11898-1:2015)         | Yes             |
-| FD Non-ISO mode               | No<sup>1.</sup> |
-| Presume ACK                   | No<sup>1.</sup> |
-| Classic CAN length 8 DLC      | No<sup>1.</sup> |
-| Transceiver dely compensation | No<sup>1.</sup> |
+| Feature                       | Supported?     |
+| ----------------------------- | -------------- |
+| Loopback                      | No             |
+| Listen-only                   | No             |
+| Tripple-sampling              | No<sup>1</sup> |
+| One-shot                      | Yes            |
+| Hardware timestamp            | No             |
+| Bus error reporting           | No             |
+| FD (ISO 11898-1:2015)         | Yes            |
+| Bitrate switching             | Yes            |
+| FD Non-ISO mode               | No<sup>2</sup> |
+| Presume ACK                   | No<sup>2</sup> |
+| Classic CAN length 8 DLC      | No<sup>2</sup> |
+| Transceiver dely compensation | No<sup>2</sup> |
 
-1. Not supported by the GS USB/CAN driver.
+1. Not supported by STM32G4.
+2. Not supported by the GS USB/CAN driver.
 
 ## Purchase
 

@@ -120,8 +120,21 @@ mod app {
             rcc.clocks.pll_clk.r.unwrap().to_MHz(),
         );
 
-        if rcc.get_reset_reason().independent_watchdog {
+        let reason = rcc.get_reset_reason();
+        if reason.independent_watchdog | reason.window_watchdog {
             defmt::info!("reset_cause=watchdog");
+        }
+        if reason.brown_out {
+            defmt::info!("reset_cause=brown_out");
+        }
+        if reason.software {
+            defmt::info!("reset_cause=software");
+        }
+        if reason.reset_pin {
+            defmt::info!("reset_cause=reset_pin");
+        }
+        if reason.option_byte {
+            defmt::info!("reset_cause=option_byte");
         }
         rcc.clear_reset_reason();
 

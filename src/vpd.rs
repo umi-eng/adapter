@@ -138,7 +138,7 @@ impl defmt::Format for Version {
 #[derive(Debug, Format)]
 #[repr(u8)]
 pub enum SkuId {
-    M2KeyE = 1,
+    M2KeyB = 1,
     MiniPCIe = 2,
 }
 
@@ -147,7 +147,7 @@ impl TryFrom<u8> for SkuId {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            x if x == Self::M2KeyE as u8 => Ok(Self::M2KeyE),
+            x if x == Self::M2KeyB as u8 => Ok(Self::M2KeyB),
             x if x == Self::MiniPCIe as u8 => Ok(Self::MiniPCIe),
             _ => Err(value),
         }

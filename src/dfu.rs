@@ -162,6 +162,12 @@ impl DfuFlash {
 
             while f.sr.read().bsy().bit_is_set() {}
 
+            // reset VTOR preventing interrupts after reset jumping to old
+            // addresses
+            unsafe {
+                (*cortex_m::peripheral::SCB::PTR).vtor.write(0x0800_0000);
+            };
+
             // launch new firmware
             f.cr.modify(|_, w| w.obl_launch().set_bit());
         });

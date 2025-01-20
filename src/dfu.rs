@@ -204,7 +204,10 @@ impl DfuMemory for DfuFlash {
             return Err(DfuMemoryError::Address);
         }
 
-        let sector = self.sector_from_address(address).unwrap();
+        let sector = match self.sector_from_address(address) {
+            Some(s) => s,
+            None => return Err(DfuMemoryError::Address),
+        };
 
         self.unlock(|f, _| {
             // clear any existing operations

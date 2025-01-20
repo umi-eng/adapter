@@ -1,8 +1,8 @@
 //! Device firmware upgrade.
 
-use crate::hal::stm32::FLASH;
+use crate::hal::cortex_m;
+use crate::hal::stm32::{CPUID, FLASH, SCB};
 use core::ops::RangeInclusive;
-use stm32g4xx_hal::cortex_m;
 use usbd_dfu::*;
 
 pub const KEY: [u32; 2] = [0x4567_0123, 0xCDEF_89AB];
@@ -28,13 +28,17 @@ pub struct DfuFlash {
     /// Write buffer. Size of flash page.
     buffer: [u8; 2048],
     flash: FLASH,
+    scb: SCB,
+    cpuid: CPUID,
 }
 
 impl DfuFlash {
-    pub fn new(flash: FLASH) -> Self {
+    pub fn new(flash: FLASH, scb: SCB, cpuid: CPUID) -> Self {
         let mut this = Self {
             buffer: [0; 2048],
             flash,
+            scb,
+            cpuid,
         };
 
         this.enable_dual_bank();
@@ -145,6 +149,9 @@ impl DfuFlash {
     /// Swap flash bank boot selection.
     fn swap_banks(&mut self) -> ! {
         cortex_m::interrupt::disable();
+
+        self.scb.disable_icache();
+        self.scb.disable_dcache(&mut self.cpuid);
 
         let bank = self.active_bank();
 

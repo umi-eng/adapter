@@ -239,6 +239,7 @@ mod app {
                 .build();
 
         watchdog::spawn().unwrap();
+        usb_poll::spawn().unwrap();
 
         defmt::info!("Init complete.");
 
@@ -260,6 +261,20 @@ mod app {
             cx.local.watchdog.feed();
             defmt::trace!("Fed watchdog.");
             Mono::delay(500_u64.millis()).await;
+        }
+    }
+
+    #[task(shared = [usb_dev, usb_can, usb_dfu])]
+    async fn usb_poll(mut cx: usb_poll::Context) {
+        loop {
+            cx.shared.usb_dev.lock(|usb_dev| {
+                cx.shared.usb_can.lock(|usb_can| {
+                    cx.shared.usb_dfu.lock(|usb_dfu| {
+                        usb_dev.poll(&mut [usb_can, usb_dfu]);
+                    });
+                });
+            });
+            Mono::delay(1_u64.millis()).await;
         }
     }
 

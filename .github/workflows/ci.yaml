@@ -39,7 +39,7 @@ jobs:
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
-      - run: cargo install flip-link
+      - run: cargo install flip-link --version 0.1.9
       - run: cargo check
 
   clippy:
@@ -74,7 +74,7 @@ jobs:
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
-      - run: cargo install flip-link
+      - run: cargo install flip-link --version 0.1.9
       - run: cargo install cargo-binutils
       - run: |
           # required by binutils

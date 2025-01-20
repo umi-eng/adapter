@@ -2,6 +2,7 @@
 
 use crate::hal::stm32::FLASH;
 use core::ops::RangeInclusive;
+use stm32g4xx_hal::cortex_m;
 use usbd_dfu::*;
 
 pub const KEY: [u32; 2] = [0x4567_0123, 0xCDEF_89AB];
@@ -143,6 +144,8 @@ impl DfuFlash {
 
     /// Swap flash bank boot selection.
     fn swap_banks(&mut self) {
+        cortex_m::interrupt::disable();
+
         let bank = self.active_bank();
 
         self.opt_unlock(|f| {

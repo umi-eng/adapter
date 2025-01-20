@@ -39,7 +39,7 @@ impl DfuFlash {
         this.enable_dual_bank();
 
         let active = this.active_bank();
-        defmt::info!("Active flash bank: {}", active);
+        defmt::info!("active_bank={}", active);
 
         this
     }

@@ -143,7 +143,7 @@ impl DfuFlash {
     }
 
     /// Swap flash bank boot selection.
-    fn swap_banks(&mut self) {
+    fn swap_banks(&mut self) -> ! {
         cortex_m::interrupt::disable();
 
         let bank = self.active_bank();
@@ -165,6 +165,9 @@ impl DfuFlash {
             // launch new firmware
             f.cr.modify(|_, w| w.obl_launch().set_bit());
         });
+
+        // core should have already reset after LAUNCH is set.
+        cortex_m::peripheral::SCB::sys_reset()
     }
 }
 
@@ -283,8 +286,6 @@ impl DfuMemory for DfuFlash {
     }
 
     fn manifestation(&mut self) -> Result<(), DfuManifestationError> {
-        self.swap_banks();
-
-        crate::hal::cortex_m::peripheral::SCB::sys_reset()
+        self.swap_banks()
     }
 }

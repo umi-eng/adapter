@@ -204,8 +204,6 @@ impl Device for UsbCanDevice {
     }
 
     fn state(&self, interface: u8) -> usbd_gscan::host::DeviceState {
-        defmt::info!("Interface number: {}", interface);
-
         let counters = match interface {
             0 => self.can1.as_ref().unwrap().error_counters(),
             1 => self.can2.as_ref().unwrap().error_counters(),

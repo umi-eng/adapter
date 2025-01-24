@@ -8,7 +8,6 @@ mod otp;
 mod vpd;
 
 use defmt_rtt as _;
-use nb::block;
 use panic_probe as _;
 use stm32g4xx_hal as hal;
 
@@ -17,6 +16,7 @@ use embedded_can::Frame;
 use fdcan::{
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
+    ReceiveOverrun,
 };
 use fugit::ExtU32;
 use hal::{
@@ -355,18 +355,25 @@ where
 {
     let mut data = [0; 64];
 
-    let (header, interrupt) = match fifo1 {
-        false => (
-            block!(can.receive0(&mut data)).unwrap().unwrap(),
-            Interrupt::RxFifo0NewMsg,
-        ),
-        true => (
-            block!(can.receive1(&mut data)).unwrap().unwrap(),
-            Interrupt::RxFifo1NewMsg,
-        ),
+    let receive = if !fifo1 {
+        can.clear_interrupt(Interrupt::RxFifo0NewMsg);
+        can.receive0(&mut data)
+    } else {
+        can.clear_interrupt(Interrupt::RxFifo1NewMsg);
+        can.receive1(&mut data)
     };
 
-    can.clear_interrupt(interrupt);
+    let header = match nb::block!(receive) {
+        Ok(ReceiveOverrun::Overrun(header)) => {
+            defmt::warn!("Receive overrun occured");
+            header
+        }
+        Ok(ReceiveOverrun::NoOverrun(header)) => header,
+        Err(e) => {
+            defmt::error!("Receive failed: {}", e);
+            return None;
+        }
+    };
 
     let len = header.len as usize;
     let id = id_to_embedded(header.id);

@@ -247,7 +247,7 @@ impl Device for UsbCanDevice {
                             defmt::warn!("Transmit overflow!")
                         }
                         Ok(None) => {
-                            defmt::info!("Transmit success!")
+                            defmt::trace!("Transmit success!")
                         }
                         Err(e) => defmt::info!("Failed to transmit: {}", e),
                     }
@@ -260,7 +260,7 @@ impl Device for UsbCanDevice {
                             defmt::warn!("Transmit overflow!")
                         }
                         Ok(None) => {
-                            defmt::info!("Transmit success!")
+                            defmt::trace!("Transmit success!")
                         }
                         Err(e) => {
                             defmt::error!("Failed to transmit: {}", e)

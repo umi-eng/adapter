@@ -173,7 +173,6 @@ mod app {
         let fdcan2 = {
             let rx = gpiob.pb5.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb6.into_alternate().set_speed(Speed::VeryHigh);
-
             let mut can = cx.device.FDCAN2.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
@@ -186,7 +185,6 @@ mod app {
         let fdcan3 = {
             let rx = gpiob.pb3.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb4.into_alternate().set_speed(Speed::VeryHigh);
-
             let mut can = cx.device.FDCAN3.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
@@ -197,12 +195,11 @@ mod app {
         };
 
         let usb = {
-            let dm = gpioa.pa11.into_alternate();
-            let dp = gpioa.pa12.into_alternate();
-
             static USB_BUS: static_cell::StaticCell<UsbBusAllocator<Usb>> =
                 static_cell::StaticCell::new();
 
+            let dm = gpioa.pa11.into_alternate();
+            let dp = gpioa.pa12.into_alternate();
             USB_BUS.init(UsbBus::new(Peripheral {
                 usb: cx.device.USB,
                 pin_dm: dm,

@@ -177,7 +177,6 @@ mod app {
             let mut can = cx.device.FDCAN2.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
-            can.set_automatic_retransmit(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
 
@@ -191,7 +190,6 @@ mod app {
             let mut can = cx.device.FDCAN3.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
-            can.set_automatic_retransmit(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
 

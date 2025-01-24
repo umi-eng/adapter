@@ -242,23 +242,29 @@ impl Device for UsbCanDevice {
         match interface {
             0 => {
                 if let Some(can) = &mut self.can1 {
-                    let overflow =
-                        nb::block!(can.transmit(header, frame.data()))
-                            .unwrap()
-                            .is_some();
-                    if overflow {
-                        defmt::warn!("CAN1 overflow");
+                    match nb::block!(can.transmit(header, frame.data())) {
+                        Ok(Some(_)) => {
+                            defmt::warn!("Transmit overflow!")
+                        }
+                        Ok(None) => {
+                            defmt::info!("Transmit success!")
+                        }
+                        Err(e) => defmt::info!("Failed to transmit: {}", e),
                     }
                 }
             }
             1 => {
                 if let Some(can) = &mut self.can2 {
-                    let overflow =
-                        nb::block!(can.transmit(header, frame.data()))
-                            .unwrap()
-                            .is_some();
-                    if overflow {
-                        defmt::warn!("CAN2 overflow");
+                    match nb::block!(can.transmit(header, frame.data())) {
+                        Ok(Some(_)) => {
+                            defmt::warn!("Transmit overflow!")
+                        }
+                        Ok(None) => {
+                            defmt::info!("Transmit success!")
+                        }
+                        Err(e) => {
+                            defmt::error!("Failed to transmit: {}", e)
+                        }
                     }
                 }
             }

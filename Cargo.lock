@@ -261,6 +261,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-io"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "edd0f118536f44f5ccd48bcb8b111bdc3de888b58c74639dfb034a357d0f206d"
+
+[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -269,8 +275,7 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 [[package]]
 name = "fdcan"
 version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a745a7ef1532cc436619631a102c1d2f71e8fd4e82f1ee48c85eaa73c0487e81"
+source = "git+https://github.com/umi-eng/fdcan?branch=adapter-hotfix#aab3ac7b59ef9bcbd830bdd96a793cf2e4591d61"
 dependencies = [
  "bitflags 1.3.2",
  "nb 1.1.0",
@@ -703,7 +708,7 @@ dependencies = [
 [[package]]
 name = "stm32g4xx-hal"
 version = "0.0.2"
-source = "git+https://github.com/umi-eng/stm32g4xx-hal/#fca39892ac02673929af55bd44bd447ec524c957"
+source = "git+https://github.com/umi-eng/stm32g4xx-hal?branch=adapter-hotfix#afd6539c46b3260c39beb5463339f26f552985f6"
 dependencies = [
  "bare-metal 0.2.5",
  "bitflags 1.3.2",
@@ -711,9 +716,11 @@ dependencies = [
  "cortex-m",
  "embedded-dma",
  "embedded-hal 0.2.7",
+ "embedded-hal 1.0.0",
+ "embedded-io",
  "fdcan",
  "fugit",
- "nb 0.1.3",
+ "nb 1.1.0",
  "paste",
  "stable_deref_trait",
  "static_assertions",
@@ -801,9 +808,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.14"
+version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
+checksum = "11cd88e12b17c6494200a9c1b683a04fcac9573ed74cd1b62aeb2727c5592243"
 
 [[package]]
 name = "usb-device"
@@ -827,7 +834,7 @@ dependencies = [
 [[package]]
 name = "usbd-gscan"
 version = "0.1.0"
-source = "git+https://github.com/umi-eng/usbd-gscan.git#85fb01eb897b228e15c6e35d77dfb1031fd061d7"
+source = "git+https://github.com/umi-eng/usbd-gscan#98b6e4955fe7cdbc08c6699ad6629f9390893916"
 dependencies = [
  "bitflags 2.8.0",
  "defmt",

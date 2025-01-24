@@ -7,29 +7,45 @@ license = "MPL-2.0"
 [dependencies]
 defmt = "0.3.8"
 defmt-rtt = "0.4.1"
-fdcan = { version = "0.2.0", features = ["fdcan_g0_g4_l5"] }
 panic-probe = { version = "0.3.2", features = ["print-defmt"] }
 rtic = { version = "2.1.1", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.2", features = [
     "cortex-m-systick",
     "systick-64bit",
 ] }
-stm32g4xx-hal = { version = "0.0.2", features = [
-    "stm32g474",
-    "usb",
-], git = "https://github.com/umi-eng/stm32g4xx-hal/" }
 zerocopy = "0.7.35"
-tlvc = { git = "https://github.com/umi-eng/tlvc.git", rev = "27f0f4a", version = "0.3.1" }
 usb-device = { version = "0.3.2", features = ["defmt"] }
-usbd-gscan = { git = "https://github.com/umi-eng/usbd-gscan.git", version = "0.1.0", features = [
-    "defmt-03",
-] }
-usbd-dfu = { version = "0.4.0", git = "https://github.com/umi-eng/usbd-dfu" }
 static_cell = "2.1.0"
 embedded-can = "0.4.1"
 heapless = "0.8.0"
 nb = "1.1.0"
 
+[dependencies.stm32g4xx-hal]
+version = "0.0.2"
+features = ["stm32g474", "usb"]
+git = "https://github.com/umi-eng/stm32g4xx-hal"
+branch = "adapter-hotfix"
+
+[dependencies.fdcan]
+version = "0.2.1"
+git = "https://github.com/umi-eng/fdcan"
+branch = "adapter-hotfix"
+features = ["fdcan_g0_g4_l5"]
+
+[dependencies.usbd-gscan]
+git = "https://github.com/umi-eng/usbd-gscan"
+version = "0.1.0"
+features = ["defmt-03"]
+
+[dependencies.usbd-dfu]
+version = "0.4.0"
+git = "https://github.com/umi-eng/usbd-dfu"
+
+[dependencies.tlvc]
+git = "https://github.com/umi-eng/tlvc.git"
+rev = "27f0f4a"
+version = "0.3.1"
+
 [build-dependencies]
 chrono = "0.4.38"
-tlvc-text = { git = "https://github.com/umi-eng/tlvc.git", rev = "27f0f4a", version = "0.3.0" }
+tlvc-text = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.0" }

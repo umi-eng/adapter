@@ -32,16 +32,6 @@ const TIMING_NOMINAL: CanBitTimingConst = CanBitTimingConst {
     brp_max: 511,
     brp_inc: 1,
 };
-const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
-    tseg1_min: 1,
-    tseg1_max: 31,
-    tseg2_min: 1,
-    tseg2_max: 15,
-    sjw_max: 15,
-    brp_min: 1,
-    brp_max: 31,
-    brp_inc: 1,
-};
 
 pub struct UsbCanDevice {
     /// CAN peripheral clock. Used by the host for bit timing calculations.
@@ -84,13 +74,21 @@ impl Device for UsbCanDevice {
             features: Feature::FD | Feature::BT_CONST_EXT | Feature::ONE_SHOT,
             fclk_can: self.clock.to_Hz(),
             timing_nominal: TIMING_NOMINAL,
-            timing_data: TIMING_DATA,
+            timing_data: CanBitTimingConst {
+                tseg1_min: 1,
+                tseg1_max: 31,
+                tseg2_min: 1,
+                tseg2_max: 15,
+                sjw_max: 15,
+                brp_min: 1,
+                brp_max: 31,
+                brp_inc: 1,
+            },
         }
     }
 
     fn configure_bit_timing(&mut self, interface: u8, timing: DeviceBitTiming) {
         let seg1 = timing.prop_seg + timing.phase_seg1;
-
         let btr = NominalBitTiming {
             prescaler: NonZeroU16::new(timing.brp as u16).unwrap(),
             seg1: NonZeroU8::new(seg1 as u8).unwrap(),
@@ -125,7 +123,6 @@ impl Device for UsbCanDevice {
         timing: DeviceBitTiming,
     ) {
         let seg1 = timing.prop_seg + timing.phase_seg1;
-
         let btr = DataBitTiming {
             transceiver_delay_compensation: true,
             prescaler: NonZeroU8::new(timing.brp as u8).unwrap(),
@@ -176,13 +173,13 @@ impl Device for UsbCanDevice {
     }
 
     fn start(&mut self, interface: u8, features: Feature) {
+        let retransmit = !features.intersects(Feature::ONE_SHOT);
+
         match interface {
             0 => {
                 if let Some(can) = self.can1.take() {
                     let mut can = can.into_config_mode();
-                    can.set_automatic_retransmit(
-                        !features.intersects(Feature::ONE_SHOT),
-                    );
+                    can.set_automatic_retransmit(retransmit);
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
                     self.can1.replace(can.into_normal());
@@ -191,9 +188,7 @@ impl Device for UsbCanDevice {
             1 => {
                 if let Some(can) = self.can2.take() {
                     let mut can = can.into_config_mode();
-                    can.set_automatic_retransmit(
-                        !features.intersects(Feature::ONE_SHOT),
-                    );
+                    can.set_automatic_retransmit(retransmit);
                     can.enable_interrupt_line(InterruptLine::_0, true);
                     can.enable_interrupt_line(InterruptLine::_1, true);
                     self.can2.replace(can.into_normal());
@@ -241,12 +236,8 @@ impl Device for UsbCanDevice {
             0 => {
                 if let Some(can) = &mut self.can1 {
                     match nb::block!(can.transmit(header, frame.data())) {
-                        Ok(Some(_)) => {
-                            defmt::warn!("Transmit overflow!")
-                        }
-                        Ok(None) => {
-                            defmt::trace!("Transmit success!")
-                        }
+                        Ok(Some(_)) => defmt::warn!("Transmit overflow!"),
+                        Ok(None) => {}
                         Err(e) => defmt::info!("Failed to transmit: {}", e),
                     }
                 }
@@ -254,15 +245,9 @@ impl Device for UsbCanDevice {
             1 => {
                 if let Some(can) = &mut self.can2 {
                     match nb::block!(can.transmit(header, frame.data())) {
-                        Ok(Some(_)) => {
-                            defmt::warn!("Transmit overflow!")
-                        }
-                        Ok(None) => {
-                            defmt::trace!("Transmit success!")
-                        }
-                        Err(e) => {
-                            defmt::error!("Failed to transmit: {}", e)
-                        }
+                        Ok(Some(_)) => defmt::warn!("Transmit overflow!"),
+                        Ok(None) => {}
+                        Err(e) => defmt::error!("Failed to transmit: {}", e),
                     }
                 }
             }

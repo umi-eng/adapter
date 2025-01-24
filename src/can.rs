@@ -127,7 +127,7 @@ impl Device for UsbCanDevice {
         let seg1 = timing.prop_seg + timing.phase_seg1;
 
         let btr = DataBitTiming {
-            transceiver_delay_compensation: false,
+            transceiver_delay_compensation: true,
             prescaler: NonZeroU8::new(timing.brp as u8).unwrap(),
             seg1: NonZeroU8::new(seg1 as u8).unwrap(),
             seg2: NonZeroU8::new(timing.phase_seg2 as u8).unwrap(),

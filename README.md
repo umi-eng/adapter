@@ -8,7 +8,7 @@ Based on the gs_usb protocol, this firmware is plug and play on most recent linu
 | -------------------------------------------- | -------------- |
 | Loopback                                     | No             |
 | Listen-only                                  | No             |
-| Tripple-sampling                             | No<sup>1</sup> |
+| Tripple-sampling                             | Yes            |
 | One-shot                                     | Yes            |
 | Hardware timestamp                           | No             |
 | Bus error reporting                          | No             |

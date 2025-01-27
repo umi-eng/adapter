@@ -1,0 +1,19 @@
+name: Changelog
+
+on:
+  pull_request:
+    types: [ opened, reopened, labeled, unlabeled, synchronize ]
+  merge_group:
+
+jobs:
+  changelog:
+    name: Require Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Check changelog update
+        uses: dangoslen/changelog-enforcer@v3
+        with:
+          skipLabels: skip-changelog
+          missingUpdateErrorMessage: 'Please add a changelog entry to the appropriate section of the CHANGELOG.md file.'

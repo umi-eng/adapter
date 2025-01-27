@@ -68,9 +68,9 @@ dfu-suffix --vid 1209 --pid 2323 --add firmware.bin
 
 ### Release
 
-Bump the version number in the `Cargo.toml` and then tag the desired commit with the version number and push to `main`.
-
-```shell
-git tag v0.0.0
-git push --all
-```
+1. Create a new PR preparing the release
+2. Bump the version number in the `Cargo.toml`
+3. Update `CHANGELOG.md` moving unreleased changes to the new version number heading
+4. Merge the PR once CI passess successfully
+5. `git tag -a vX.Y.Z -m vX.Y.Z`
+6. `git push vX.Y.Z`

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Implement triple sampling using edge filtering
+
 ## v0.1.3
 
 - Add more test scripts

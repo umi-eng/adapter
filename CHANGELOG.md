@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.1.3
+
 - Add more test scripts
 - Don't unwrap infallible when using fdcan transmit/receive
 - Enable transceiver delay compensation

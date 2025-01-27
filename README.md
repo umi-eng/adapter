@@ -73,4 +73,4 @@ dfu-suffix --vid 1209 --pid 2323 --add firmware.bin
 3. Update `CHANGELOG.md` moving unreleased changes to the new version number heading
 4. Merge the PR once CI passess successfully
 5. `git tag -a vX.Y.Z -m vX.Y.Z`
-6. `git push vX.Y.Z`
+6. `git push --tags`

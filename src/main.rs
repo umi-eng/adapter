@@ -73,6 +73,8 @@ mod app {
 
     #[init]
     fn init(mut cx: init::Context) -> (Shared, Local) {
+        defmt::info!("init=start");
+
         defmt::info!(
             "name={} version={} git_hash={} built_at={}",
             env!("CARGO_PKG_NAME"),
@@ -238,7 +240,7 @@ mod app {
         watchdog::spawn().unwrap();
         usb_poll::spawn().unwrap();
 
-        defmt::info!("Init complete.");
+        defmt::info!("init=finish");
 
         (
             Shared {

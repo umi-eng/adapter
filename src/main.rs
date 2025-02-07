@@ -235,6 +235,7 @@ mod app {
                     .serial_number(serial.as_str())])
                 .unwrap()
                 .device_class(usbd_gscan::INTERFACE_CLASS)
+                .usb_rev(usb_device::device::UsbRev::Usb200)
                 .build();
 
         watchdog::spawn().unwrap();

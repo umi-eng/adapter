@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 - Implement triple sampling using edge filtering
+- Change USB max power from 100mA to 150mA
+- Change USB revision to 2.0 for Windows compatibility
+- Set USB sub class and protocol explicitly
+- Use GS USB identifier
 
 ## v0.1.3
 

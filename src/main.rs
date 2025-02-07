@@ -236,6 +236,8 @@ mod app {
                 .unwrap()
                 .device_class(usbd_gscan::INTERFACE_CLASS)
                 .usb_rev(usb_device::device::UsbRev::Usb200)
+                .device_sub_class(0xFF)
+                .device_protocol(0xFF)
                 .build();
 
         watchdog::spawn().unwrap();

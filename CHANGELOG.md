@@ -7,6 +7,7 @@
 - Change USB revision to 2.0 for Windows compatibility
 - Set USB sub class and protocol explicitly
 - Use GS USB identifier
+- Change the USB product name to be generic to all SKUs
 
 ## v0.1.3
 

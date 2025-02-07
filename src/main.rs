@@ -231,7 +231,7 @@ mod app {
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::GS_USB_1)
                 .strings(&[StringDescriptors::default()
                     .manufacturer("Universal Machine Intelligence")
-                    .product("M.2 CAN FD Adapter")
+                    .product("CAN FD Adapter")
                     .serial_number(serial.as_str())])
                 .unwrap()
                 .device_class(usbd_gscan::INTERFACE_CLASS)

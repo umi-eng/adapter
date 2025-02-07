@@ -238,6 +238,8 @@ mod app {
                 .usb_rev(usb_device::device::UsbRev::Usb200)
                 .device_sub_class(0xFF)
                 .device_protocol(0xFF)
+                .max_packet_size_0(64)
+                .unwrap()
                 .build();
 
         watchdog::spawn().unwrap();

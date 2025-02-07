@@ -240,6 +240,8 @@ mod app {
                 .device_protocol(0xFF)
                 .max_packet_size_0(64)
                 .unwrap()
+                .max_power(150)
+                .unwrap()
                 .build();
 
         watchdog::spawn().unwrap();

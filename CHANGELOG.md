@@ -8,6 +8,9 @@
 - Set USB sub class and protocol explicitly
 - Use GS USB identifier
 - Change the USB product name to be generic to all SKUs
+- Update `fdcan` crate to fix multiply overfow during interface configuration
+- Disable interfaces at the start of configuration fuzzing
+- Add doc about Windows device enumeration
 
 ## v0.1.3
 

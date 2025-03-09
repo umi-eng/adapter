@@ -4,6 +4,11 @@
 # Exit if anything returns an error.
 set -e
 
+echo "Disabling interfaces."
+
+ip link set down can0
+ip link set down can1
+
 echo "Testing standard bitrates."
 
 echo "   5 Mbit/s"; ip link set can0 type can bitrate 5000000
@@ -34,6 +39,5 @@ echo "Testing sample points."
 echo "87.5%"; ip link set can0 type can bitrate 250000 sample-point 0.875
 echo "75.0%"; ip link set can0 type can bitrate 250000 sample-point 0.750
 echo "50.0%"; ip link set can0 type can bitrate 250000 sample-point 0.500
-
 
 echo "Finished..."

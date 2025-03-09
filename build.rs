@@ -13,6 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(path) = option_env!("WRITE_VPD") {
         let vpd_file = File::open(path)?;
         let vpd = pack(&load(vpd_file)?);
+        assert!(vpd.len() <= 1024, "VPD will not fit into OTP memory");
         File::create(out.join("vpd.bin"))?.write_all(&vpd)?;
     } else {
         // write empty file to satisfy clippy

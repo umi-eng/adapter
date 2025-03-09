@@ -11,6 +11,7 @@
 - Update `fdcan` crate to fix multiply overfow during interface configuration
 - Disable interfaces at the start of configuration fuzzing
 - Add doc about Windows device enumeration
+- Assert VPD will fit in OTP memory
 
 ## v0.1.3
 

@@ -11,7 +11,7 @@ use zerocopy::{AsBytes, FromBytes, FromZeroes};
 pub struct VitalProductData {
     pub serial: Serial,
     pub hardware: Version,
-    pub sku: Sku,
+    pub sku: MaybeSku,
 }
 
 impl VitalProductData {
@@ -36,7 +36,7 @@ impl VitalProductData {
         Ok(Self {
             serial: serial.unwrap_or_default(),
             hardware: version.unwrap_or_default(),
-            sku: Sku::from(sku.unwrap_or_default()),
+            sku: MaybeSku::from(sku.unwrap_or_default()),
         })
     }
 
@@ -155,12 +155,12 @@ impl TryFrom<u8> for SkuId {
 }
 
 #[derive(Debug, Format)]
-pub enum Sku {
+pub enum MaybeSku {
     Known(SkuId),
     Unknown(u8),
 }
 
-impl From<u8> for Sku {
+impl From<u8> for MaybeSku {
     fn from(value: u8) -> Self {
         match SkuId::try_from(value) {
             Ok(sku) => Self::Known(sku),

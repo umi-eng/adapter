@@ -1,4 +1,6 @@
-//! Device firmware upgrade.
+//! # Device Firmware Upgrade
+//!
+//! USB firmware upgrade implementation.
 
 use crate::hal::cortex_m;
 use crate::hal::stm32::{CPUID, FLASH, SCB};

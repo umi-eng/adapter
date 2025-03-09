@@ -1,3 +1,7 @@
+//! # One-time-Programmable Memory
+//!
+//! Read and write operations for OTP memory.
+
 use crate::{dfu::KEY, hal::stm32::FLASH};
 
 const OTP_LEN: usize = 1024; // 1 kilobyte

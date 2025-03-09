@@ -1,3 +1,8 @@
+//! # UMI CAN FD Adapter
+//!
+//! This crate is the firmware for UMI CAN FD Adapter devices. See the readme in
+//! the repository for more details.
+
 #![no_std]
 #![no_main]
 #![feature(core_io_borrowed_buf)]

@@ -1,4 +1,7 @@
-//! Controller area network.
+//! # Controller Area Network
+//!
+//! This module implements the USB-CAN device which implements the gs_usb
+//! protocol.
 
 use crate::hal::{
     can::Can,

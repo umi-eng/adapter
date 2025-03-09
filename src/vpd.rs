@@ -1,4 +1,25 @@
-//! Vital product data.
+//! # Vital Product Data
+//!
+//! This is the metadata written to the device during manufacturing that
+//! provides useful information to the firmware.
+//!
+//! ## Writing Product Data
+//!
+//! <div class="warning">Once written, changing the VPD is not possible due to
+//! the one-time-programmable memory it is written to.</div>
+//!
+//! To write VPD to a device, first fill out the `vpd.ron` file with your
+//! desired data, then run `WRITE_VPD=vpd.ron cargo run` which will write the
+//! encoded data to OTP memory and then startup normally.
+//!
+//! Once the VPD has been written for the first time, sucessive attempts to
+//! write VPD will fail silently as the OTP memory is write-only.
+//!
+//! ## Fail-safety Behaviour
+//!
+//! The system implements fault tollerance by reverting back to defaults for
+//! each key for corrupt or malformed data. This ensures that the device will
+//! still sucessfully start up rather than being bricked.
 
 use core::{convert::Infallible, fmt::Formatter};
 use defmt::Format;

@@ -48,7 +48,7 @@ Prerequisites:
 
 - [Rust](https://www.rust-lang.org/tools/install) with the `thumbv7em-none-eabihf` target
 - [probe-rs](https://probe.rs/)
-- [flip-link](https://github.com/knurling-rs/flip-link?tab=readme-ov-file#installation)
+- [flip-link](https://github.com/knurling-rs/flip-link#installation)
 
 ### Debug
 

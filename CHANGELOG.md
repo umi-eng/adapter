@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## v0.2.1
+
+- Choose some safer and smaller options for release profile.
+
 ## v0.2.0
 
 - Implement triple sampling using edge filtering

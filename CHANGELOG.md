@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## v0.2.2
+
+- Revert release profile changes.
+
 ## v0.2.1
 
 - Choose some safer and smaller options for release profile.

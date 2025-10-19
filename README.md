@@ -63,7 +63,7 @@ cargo build --release
 # Output firmware binary
 cargo objcopy --release -- -O binary firmware.bin
 # Prepare for DFU upload
-dfu-suffix --vid 1209 --pid 2323 --add firmware.bin
+dfu-suffix --vid 1d50 --pid 606f --add firmware.bin
 ```
 
 ### Release

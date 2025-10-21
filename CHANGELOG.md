@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix deadlock caused by 64-bit atomics used by the SysTick implementation.
+
 ## v0.2.2
 
 - Revert release profile changes.

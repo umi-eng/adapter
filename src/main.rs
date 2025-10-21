@@ -49,8 +49,10 @@ use usbd_dfu::DfuClass;
 use usbd_gscan::{host::FrameFlag, GsCan};
 use vpd::VitalProductData;
 
-systick_monotonic!(Mono, 10_000);
-defmt::timestamp!("{=u64:us}", Mono::now().duration_since_epoch().to_micros());
+// The 32-bit counter will overflow every 49.7 days.
+// A 64-bit counter cannot be used due to armv7 atomics limitations.
+systick_monotonic!(Mono, 1_000);
+defmt::timestamp!("{=u32:us}", Mono::now().duration_since_epoch().to_micros());
 
 #[rtic::app(device = stm32g4xx_hal::stm32, peripherals = true)]
 mod app {
@@ -271,7 +273,7 @@ mod app {
             // Feed watchdog periodically.
             cx.local.watchdog.feed();
             defmt::trace!("Fed watchdog.");
-            Mono::delay(500_u64.millis()).await;
+            Mono::delay(500.millis()).await;
         }
     }
 
@@ -285,7 +287,7 @@ mod app {
                     });
                 });
             });
-            Mono::delay(1_u64.millis()).await;
+            Mono::delay(1.millis()).await;
         }
     }
 

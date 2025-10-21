@@ -11,7 +11,6 @@ panic-probe = { version = "0.3.2", features = ["print-defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.3", features = [
     "cortex-m-systick",
-    "systick-64bit",
 ] }
 zerocopy = "0.7.35"
 usb-device = { version = "0.3.2", features = ["defmt"] }

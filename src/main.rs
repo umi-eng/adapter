@@ -376,13 +376,17 @@ where
         can.receive1(&mut data)
     };
 
-    let header = match nb::block!(receive) {
+    let header = match receive {
         Ok(ReceiveOverrun::Overrun(header)) => {
             defmt::warn!("Receive overrun occured");
             header
         }
         Ok(ReceiveOverrun::NoOverrun(header)) => header,
-        Err(e) => {
+        Err(nb::Error::WouldBlock) => {
+            defmt::info!("No message to read");
+            return None;
+        }
+        Err(nb::Error::Other(e)) => {
             defmt::error!("Receive failed: {}", e);
             return None;
         }

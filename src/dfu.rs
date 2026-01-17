@@ -36,19 +36,12 @@ pub struct DfuFlash {
 
 impl DfuFlash {
     pub fn new(flash: FLASH, scb: SCB, cpuid: CPUID) -> Self {
-        let mut this = Self {
+        Self {
             buffer: [0; 2048],
             flash,
             scb,
             cpuid,
-        };
-
-        this.enable_dual_bank();
-
-        let active = this.active_bank();
-        defmt::info!("active_bank={}", active);
-
-        this
+        }
     }
 
     fn unlock<F, T>(&mut self, f: F) -> T

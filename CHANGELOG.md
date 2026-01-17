@@ -4,6 +4,7 @@
 
 - Fix deadlock caused by 64-bit atomics used by the SysTick implementation.
 - Fix spinning forever when CAN interrupts fire without a frame to receive [#7].
+- Cleanup imports.
 
 ## v0.2.2
 

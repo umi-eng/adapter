@@ -21,9 +21,9 @@ use embedded_can::Frame;
 use fdcan::{
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
-    ReceiveOverrun,
 };
 use fugit::ExtU32;
+use hal::rcc;
 use hal::{
     can::CanExt,
     gpio::{
@@ -33,10 +33,6 @@ use hal::{
     independent_watchdog::IndependentWatchdog,
     prelude::*,
     pwr::{PwrExt, VoltageScale},
-    rcc::{
-        FdCanClockSource, PllConfig, PllMDiv, PllNMul, PllQDiv, PllRDiv,
-        PllSrc, Prescaler,
-    },
     time::RateExtU32,
     usb::{Peripheral, UsbBus},
 };
@@ -99,16 +95,16 @@ mod app {
         let rcc = cx.device.RCC.constrain();
         let mut rcc = rcc.freeze(
             hal::rcc::Config::new(hal::rcc::SysClockSrc::PLL)
-                .pll_cfg(PllConfig {
-                    mux: PllSrc::HSE(24.MHz()),
-                    m: PllMDiv::DIV_6,
-                    n: PllNMul::MUL_80,
+                .pll_cfg(rcc::PllConfig {
+                    mux: rcc::PllSrc::HSE(24.MHz()),
+                    m: rcc::PllMDiv::DIV_6,
+                    n: rcc::PllNMul::MUL_80,
                     p: None,
-                    q: Some(PllQDiv::DIV_4),
-                    r: Some(PllRDiv::DIV_2),
+                    q: Some(rcc::PllQDiv::DIV_4),
+                    r: Some(rcc::PllRDiv::DIV_2),
                 })
-                .ahb_psc(Prescaler::NotDivided)
-                .fdcan_src(FdCanClockSource::PLLQ),
+                .ahb_psc(rcc::Prescaler::NotDivided)
+                .fdcan_src(rcc::FdCanClockSource::PLLQ),
             pwr,
         );
         rcc.enable_hsi48();
@@ -377,11 +373,11 @@ where
     };
 
     let header = match receive {
-        Ok(ReceiveOverrun::Overrun(header)) => {
+        Ok(fdcan::ReceiveOverrun::Overrun(header)) => {
             defmt::warn!("Receive overrun occured");
             header
         }
-        Ok(ReceiveOverrun::NoOverrun(header)) => header,
+        Ok(fdcan::ReceiveOverrun::NoOverrun(header)) => header,
         Err(nb::Error::WouldBlock) => {
             defmt::info!("No message to read");
             return None;

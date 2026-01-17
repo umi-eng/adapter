@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remove use of static-cell.
+
 ## v0.2.3
 
 - Fix deadlock caused by 64-bit atomics used by the SysTick implementation.

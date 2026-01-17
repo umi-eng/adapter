@@ -14,7 +14,6 @@ rtic-monotonics = { version = "2.0.3", features = [
 ] }
 zerocopy = "0.7.35"
 usb-device = { version = "0.3.2", features = ["defmt"] }
-static_cell = "2.1.0"
 embedded-can = "0.4.1"
 heapless = "0.8.0"
 nb = "1.1.0"

@@ -9,6 +9,7 @@
 - Cleanup imports.
 - Use single interrupt line per CAN peripheral.
 - Don't enable dual-bank flash on startup.
+- Fix Rust toolchain CI action.
 
 ## v0.2.2
 

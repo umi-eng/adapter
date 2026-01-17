@@ -66,7 +66,8 @@ jobs:
     needs: [check, format, clippy]
     if: startsWith(github.ref, 'refs/tags/v')
     outputs:
-          version: ${{ steps.get-version.outputs.filename }}
+      version: ${{ steps.get-version.outputs.version }}
+      filename: ${{ steps.get-version.outputs.filename }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -139,3 +140,9 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "artifacts/*"
+          body: |
+            Update firmware with [`dfu-util`](https://dfu-util.sourceforge.net/):
+
+            ```shell
+            dfu-util -s 0x08000000:leave --download ${{ needs.release.outputs.filename }}
+            ```

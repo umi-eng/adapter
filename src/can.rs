@@ -165,14 +165,16 @@ impl Device for UsbCanDevice {
         match interface {
             0 => {
                 if let Some(mut can) = self.can1.take() {
-                    can.enable_interrupt_line(InterruptLine::_0, false);
+                    // Interrupt line 1 and 0 are swapped
+                    // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
                     self.can1.replace(can);
                 }
             }
             1 => {
                 if let Some(mut can) = self.can2.take() {
-                    can.enable_interrupt_line(InterruptLine::_0, false);
+                    // Interrupt line 1 and 0 are swapped
+                    // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
                     self.can2.replace(can);
                 }
@@ -191,7 +193,8 @@ impl Device for UsbCanDevice {
                     let mut can = can.into_config_mode();
                     can.set_automatic_retransmit(retransmit);
                     can.set_edge_filtering(triple_sampling);
-                    can.enable_interrupt_line(InterruptLine::_0, true);
+                    // Interrupt line 1 and 0 are swapped
+                    // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, true);
                     self.can1.replace(can.into_normal());
                 }
@@ -201,7 +204,8 @@ impl Device for UsbCanDevice {
                     let mut can = can.into_config_mode();
                     can.set_automatic_retransmit(retransmit);
                     can.set_edge_filtering(triple_sampling);
-                    can.enable_interrupt_line(InterruptLine::_0, true);
+                    // Interrupt line 1 and 0 are swapped
+                    // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, true);
                     self.can2.replace(can.into_normal());
                 }

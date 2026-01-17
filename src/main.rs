@@ -307,21 +307,10 @@ mod app {
 
     #[task(binds = FDCAN2_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan2_it0(cx: fdcan2_it0::Context) {
+        let mut data = [0; 64];
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can1 {
-                if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(0, &frame, frame.flags);
-                    usb_dev.poll(&mut [usb_can]);
-                }
-            }
-        });
-    }
-
-    #[task(binds = FDCAN2_INTR1, shared = [usb_dev, usb_can])]
-    fn fdcan2_it1(cx: fdcan2_it1::Context) {
-        (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
-                if let Some(frame) = handle_fifo(can, true) {
+                if let Some(frame) = handle_fifo(can, &mut data) {
                     usb_can.transmit(0, &frame, frame.flags);
                     usb_dev.poll(&mut [usb_can]);
                 }
@@ -331,21 +320,10 @@ mod app {
 
     #[task(binds = FDCAN3_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan3_it0(cx: fdcan3_it0::Context) {
+        let mut data = [0; 64];
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
             if let Some(can) = &mut usb_can.device.can2 {
-                if let Some(frame) = handle_fifo(can, false) {
-                    usb_can.transmit(1, &frame, frame.flags);
-                    usb_dev.poll(&mut [usb_can]);
-                }
-            }
-        });
-    }
-
-    #[task(binds = FDCAN3_INTR1, shared = [usb_dev, usb_can])]
-    fn fdcan3_it1(cx: fdcan3_it1::Context) {
-        (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can2 {
-                if let Some(frame) = handle_fifo(can, true) {
+                if let Some(frame) = handle_fifo(can, &mut data) {
                     usb_can.transmit(1, &frame, frame.flags);
                     usb_dev.poll(&mut [usb_can]);
                 }
@@ -357,19 +335,20 @@ mod app {
 /// Ingest the frame from the given FIFO queue.
 pub fn handle_fifo<F>(
     can: &mut fdcan::FdCan<F, fdcan::NormalOperationMode>,
-    fifo1: bool,
+    data: &mut [u8],
 ) -> Option<usbd_gscan::host::Frame>
 where
     F: fdcan::Instance,
 {
-    let mut data = [0; 64];
-
-    let receive = if !fifo1 {
+    let receive = if can.has_interrupt(Interrupt::RxFifo0NewMsg) {
         can.clear_interrupt(Interrupt::RxFifo0NewMsg);
-        can.receive0(&mut data)
-    } else {
+        can.receive0(data)
+    } else if can.has_interrupt(Interrupt::RxFifo1NewMsg) {
         can.clear_interrupt(Interrupt::RxFifo1NewMsg);
-        can.receive1(&mut data)
+        can.receive1(data)
+    } else {
+        defmt::error!("Unhandled interrupt");
+        return None;
     };
 
     let header = match receive {

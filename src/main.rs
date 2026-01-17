@@ -17,6 +17,7 @@ use panic_probe as _;
 use stm32g4xx_hal as hal;
 
 use can::id_to_embedded;
+use core::mem::MaybeUninit;
 use embedded_can::Frame;
 use fdcan::{
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
@@ -74,7 +75,10 @@ mod app {
         watchdog: IndependentWatchdog,
     }
 
-    #[init]
+    #[init(local = [
+        usb: MaybeUninit<UsbBusAllocator<Usb>> = MaybeUninit::uninit(),
+        serial_string: heapless::String<9> = heapless::String::new()
+    ])]
     fn init(mut cx: init::Context) -> (Shared, Local) {
         defmt::info!("init=start");
 
@@ -199,18 +203,11 @@ mod app {
             can.into_normal()
         };
 
-        let usb = {
-            static USB_BUS: static_cell::StaticCell<UsbBusAllocator<Usb>> =
-                static_cell::StaticCell::new();
-
-            let dm = gpioa.pa11.into_alternate();
-            let dp = gpioa.pa12.into_alternate();
-            USB_BUS.init(UsbBus::new(Peripheral {
-                usb: cx.device.USB,
-                pin_dm: dm,
-                pin_dp: dp,
-            }))
-        };
+        let usb = cx.local.usb.write(UsbBus::new(Peripheral {
+            usb: cx.device.USB,
+            pin_dm: gpioa.pa11.into_alternate(),
+            pin_dp: gpioa.pa12.into_alternate(),
+        }));
 
         let usb_can = GsCan::new(
             usb,
@@ -225,17 +222,18 @@ mod app {
             dfu::DfuFlash::new(cx.device.FLASH, cx.core.SCB, cx.core.CPUID),
         );
 
-        static SERIAL: static_cell::StaticCell<heapless::String<9>> =
-            static_cell::StaticCell::new();
-        let serial = SERIAL.init(heapless::String::new());
-        core::fmt::write(serial, format_args!("{}", vpd.serial)).unwrap();
+        core::fmt::write(
+            cx.local.serial_string,
+            format_args!("{}", vpd.serial),
+        )
+        .unwrap();
 
         let usb_dev =
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::GS_USB_1)
                 .strings(&[StringDescriptors::default()
                     .manufacturer("Universal Machine Intelligence")
                     .product("CAN FD Adapter")
-                    .serial_number(serial.as_str())])
+                    .serial_number(cx.local.serial_string.as_str())])
                 .unwrap()
                 .device_class(usbd_gscan::INTERFACE_CLASS)
                 .usb_rev(usb_device::device::UsbRev::Usb200)

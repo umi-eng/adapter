@@ -78,8 +78,8 @@ jobs:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
       - run: rustup component add --toolchain nightly-2024-06-12-x86_64-unknown-linux-gnu clippy
-      - run: cargo install flip-link --version 0.1.9
-      - run: cargo install cargo-binutils
+      - run: cargo install flip-link --version 0.1.9 --locked
+      - run: cargo install cargo-binutils --locked
       - run: |
           # required by binutils
           rustup component add llvm-tools-preview

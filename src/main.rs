@@ -5,7 +5,6 @@
 
 #![no_std]
 #![no_main]
-#![feature(core_io_borrowed_buf)]
 
 mod can;
 mod dfu;

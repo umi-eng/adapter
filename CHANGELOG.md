@@ -4,6 +4,7 @@
 
 - Remove use of static-cell.
 - Fix DFU suffix being incorrect in CI.
+- Show error when invalid interface number is used on receive.
 
 ## v0.2.3
 

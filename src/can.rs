@@ -267,7 +267,7 @@ impl Device for UsbCanDevice {
                     }
                 }
             }
-            _ => {}
+            _ => defmt::error!("Interface {} not in use", interface),
         }
     }
 }

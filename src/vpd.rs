@@ -102,11 +102,6 @@ impl Default for Serial {
 impl Serial {
     /// Assert size at compile time.
     const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
-
-    /// Creates a new [`Serial`]
-    pub fn new(year: u8, week: u8, seq: u16) -> Self {
-        Self { year, week, seq }
-    }
 }
 
 impl defmt::Format for Serial {
@@ -134,16 +129,6 @@ pub struct Version {
 impl Version {
     /// Assert size at compile time.
     const _SIZE: () = assert!(core::mem::size_of::<Self>() == 4);
-
-    /// Creates a new [`Version`].
-    pub fn new(major: u8, minor: u8, patch: u8, pre: u8) -> Self {
-        Self {
-            major,
-            minor,
-            patch,
-            pre,
-        }
-    }
 }
 
 impl defmt::Format for Version {

@@ -18,12 +18,11 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@56f84321dbccf38fb67ce29ab63e4754056677e0
+        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
           components: rustfmt
-      - run: rustup component add --toolchain nightly-2024-06-12-x86_64-unknown-linux-gnu rustfmt
       - name: Check format
         run: cargo fmt --all -- --check
 
@@ -36,11 +35,10 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@56f84321dbccf38fb67ce29ab63e4754056677e0
+        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
-      - run: rustup component add --toolchain nightly-2024-06-12-x86_64-unknown-linux-gnu clippy
       - run: cargo install flip-link --version 0.1.9
       - run: cargo check
 
@@ -51,12 +49,11 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@56f84321dbccf38fb67ce29ab63e4754056677e0
+        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
           components: clippy
-      - run: rustup component add --toolchain nightly-2024-06-12-x86_64-unknown-linux-gnu clippy
       - name: Check clippy
         run: cargo clippy --all-features --locked -- -D warnings
 
@@ -74,11 +71,10 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@56f84321dbccf38fb67ce29ab63e4754056677e0
+        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
         with:
           toolchain: nightly
           targets: thumbv7em-none-eabihf
-      - run: rustup component add --toolchain nightly-2024-06-12-x86_64-unknown-linux-gnu clippy
       - run: cargo install flip-link --version 0.1.9 --locked
       - run: cargo install cargo-binutils --locked
       - run: |

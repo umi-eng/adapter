@@ -1,5 +1,3 @@
 [toolchain]
-# later versions break static-cell
-# see: https://github.com/embassy-rs/static-cell/issues/16
-channel = "nightly-2024-06-12"
+channel = "1.92.0"
 targets = ["thumbv7em-none-eabihf"]

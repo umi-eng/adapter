@@ -109,7 +109,7 @@ impl DfuFlash {
         }
 
         // Check if address is at start of sector
-        if (address - base) % sector_size != 0 {
+        if !(address - base).is_multiple_of(sector_size) {
             return None;
         }
 

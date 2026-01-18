@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.2.4
+
 - Remove use of static-cell.
 - Fix DFU suffix being incorrect in CI.
 - Show error when invalid interface number is used on receive.

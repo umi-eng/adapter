@@ -8,5 +8,5 @@ To have Windows properly re-enumerate the device, you must delete the
 corresponding registry key.
 
 ```
-Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\usbflags\120923230010
+Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\usbflags\1d50606f0010
 ```

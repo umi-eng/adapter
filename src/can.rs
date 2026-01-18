@@ -36,6 +36,17 @@ const TIMING_NOMINAL: CanBitTimingConst = CanBitTimingConst {
     brp_inc: 1,
 };
 
+const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
+    tseg1_min: 1,
+    tseg1_max: 31,
+    tseg2_min: 1,
+    tseg2_max: 15,
+    sjw_max: 15,
+    brp_min: 1,
+    brp_max: 31,
+    brp_inc: 1,
+};
+
 pub struct UsbCanDevice {
     /// CAN peripheral clock. Used by the host for bit timing calculations.
     clock: Hertz,
@@ -83,16 +94,7 @@ impl Device for UsbCanDevice {
                 | Feature::TRIPLE_SAMPLE,
             fclk_can: self.clock.to_Hz(),
             timing_nominal: TIMING_NOMINAL,
-            timing_data: CanBitTimingConst {
-                tseg1_min: 1,
-                tseg1_max: 31,
-                tseg2_min: 1,
-                tseg2_max: 15,
-                sjw_max: 15,
-                brp_min: 1,
-                brp_max: 31,
-                brp_inc: 1,
-            },
+            timing_data: TIMING_DATA,
         }
     }
 

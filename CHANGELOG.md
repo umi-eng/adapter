@@ -5,6 +5,7 @@
 - Remove use of static-cell.
 - Fix DFU suffix being incorrect in CI.
 - Show error when invalid interface number is used on receive.
+- Update to stable Rust version.
 
 ## v0.2.3
 

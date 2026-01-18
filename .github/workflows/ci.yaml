@@ -114,7 +114,7 @@ jobs:
       - run: cargo objcopy --release -- -O binary ${{ steps.get-version.outputs.filename }}
       - name: Install dfu-utils
         run: sudo apt-get install -y dfu-util
-      - run: dfu-suffix --vid 1209 --pid 2323 --add ${{ steps.get-version.outputs.filename }}
+      - run: dfu-suffix --vid 1d50 --pid 606f --add ${{ steps.get-version.outputs.filename }}
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.get-version.outputs.filename }}

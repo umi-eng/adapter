@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Remove use of static-cell.
+- Fix DFU suffix being incorrect in CI.
 
 ## v0.2.3
 

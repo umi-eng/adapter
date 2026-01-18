@@ -17,12 +17,7 @@ jobs:
           echo "github.event_name = ${{ github.event_name }}"
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
-        with:
-          toolchain: 1.92.0
-          targets: thumbv7em-none-eabihf
-          components: rustfmt
+      - run: rustup toolchain install
       - name: Check format
         run: cargo fmt --all -- --check
 
@@ -34,11 +29,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
-        with:
-          toolchain: 1.92.0
-          targets: thumbv7em-none-eabihf
+      - run: rustup toolchain install
       - run: cargo install flip-link --version 0.1.9
       - run: cargo check
 
@@ -48,12 +39,7 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
-        with:
-          toolchain: 1.92.0
-          targets: thumbv7em-none-eabihf
-          components: clippy
+      - run: rustup toolchain install
       - name: Check clippy
         run: cargo clippy --all-features --locked -- -D warnings
 
@@ -70,11 +56,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561
-        with:
-          toolchain: 1.92.0
-          targets: thumbv7em-none-eabihf
+      - run: rustup toolchain install
       - run: cargo install flip-link --version 0.1.9 --locked
       - run: cargo install cargo-binutils --locked
       - run: |

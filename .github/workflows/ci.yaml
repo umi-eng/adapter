@@ -18,6 +18,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - run: rustup toolchain install
+      - run: rustup component add rustfmt
       - name: Check format
         run: cargo fmt --all -- --check
 
@@ -40,6 +41,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
       - run: rustup toolchain install
+      - run: rustup component add clippy
       - name: Check clippy
         run: cargo clippy --all-features --locked -- -D warnings
 

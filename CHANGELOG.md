@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Show error instead of blocking on transmit overflow.
+
 ## v0.2.4
 
 - Remove use of static-cell.

@@ -80,7 +80,8 @@ impl Device for UsbCanDevice {
             features: Feature::FD
                 | Feature::BT_CONST_EXT
                 | Feature::ONE_SHOT
-                | Feature::TRIPLE_SAMPLE,
+                | Feature::TRIPLE_SAMPLE
+                | Feature::GET_STATE,
             fclk_can: self.clock.to_Hz(),
             timing: TIMING_NOMINAL,
         }
@@ -91,7 +92,8 @@ impl Device for UsbCanDevice {
             features: Feature::FD
                 | Feature::BT_CONST_EXT
                 | Feature::ONE_SHOT
-                | Feature::TRIPLE_SAMPLE,
+                | Feature::TRIPLE_SAMPLE
+                | Feature::GET_STATE,
             fclk_can: self.clock.to_Hz(),
             timing_nominal: TIMING_NOMINAL,
             timing_data: TIMING_DATA,

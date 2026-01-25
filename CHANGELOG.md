@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Show error instead of blocking on transmit overflow.
+- Enable interface state request feature.
 
 ## v0.2.4
 

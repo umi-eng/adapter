@@ -378,9 +378,9 @@ pub fn handle_error<F>(
 where
     F: fdcan::Instance,
 {
-    let mut error = usbd_gscan::errors::Error::default();
-
     can.clear_interrupts(BUS_ERR_INTERRUPTS);
+
+    let mut error = usbd_gscan::errors::Error::default();
 
     let ps = can.get_protocol_status();
     error.bus_error = ps.bus_off_status;

@@ -40,7 +40,7 @@ version = "0.4.0"
 git = "https://github.com/umi-eng/usbd-dfu"
 
 [dependencies.tlvc]
-git = "https://github.com/umi-eng/tlvc.git"
+git = "https://github.com/umi-eng/tlvc"
 rev = "27f0f4a"
 version = "0.3.1"
 

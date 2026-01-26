@@ -342,13 +342,7 @@ mod app {
     #[task(binds = FDCAN2_INTR1, shared = [usb_can])]
     fn fdcan2_it1(mut cx: fdcan2_it1::Context) {
         cx.shared.usb_can.lock(|can| {
-            let error = if let Some(can) = &mut can.device.can1 {
-                Some(handle_error(can))
-            } else {
-                None
-            };
-
-            if let Some(error) = error {
+            if let Some(error) = can.device.can1.as_mut().map(handle_error) {
                 can.transmit_error(0, error);
             }
         });
@@ -370,13 +364,7 @@ mod app {
     #[task(binds = FDCAN3_INTR1, shared = [usb_can])]
     fn fdcan3_it1(mut cx: fdcan3_it1::Context) {
         cx.shared.usb_can.lock(|can| {
-            let error = if let Some(can) = &mut can.device.can2 {
-                Some(handle_error(can))
-            } else {
-                None
-            };
-
-            if let Some(error) = error {
+            if let Some(error) = can.device.can2.as_mut().map(handle_error) {
                 can.transmit_error(1, error);
             }
         });

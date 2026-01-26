@@ -172,7 +172,9 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
+                    can.enable_interrupt_line(InterruptLine::_0, false);
                     can.clear_interrupts(Interrupts::all());
+                    // todo: clear error states here
                     self.can1.replace(can);
                 }
             }
@@ -181,7 +183,9 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
+                    can.enable_interrupt_line(InterruptLine::_0, false);
                     can.clear_interrupts(Interrupts::all());
+                    // todo: clear error states here
                     self.can2.replace(can);
                 }
             }
@@ -202,6 +206,7 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, true);
+                    can.enable_interrupt_line(InterruptLine::_0, true);
                     self.can1.replace(can.into_normal());
                 }
             }
@@ -213,6 +218,7 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, true);
+                    can.enable_interrupt_line(InterruptLine::_0, true);
                     self.can2.replace(can.into_normal());
                 }
             }

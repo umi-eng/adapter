@@ -11,7 +11,7 @@ use crate::hal::{
 use core::num::{NonZeroU16, NonZeroU8};
 use embedded_can::{Frame as _, Id};
 use fdcan::{
-    config::{DataBitTiming, InterruptLine, NominalBitTiming},
+    config::{DataBitTiming, InterruptLine, Interrupts, NominalBitTiming},
     frame::FrameFormat,
     FdCan, ReceiveErrorOverflow,
 };
@@ -172,6 +172,7 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
+                    can.clear_interrupts(Interrupts::all());
                     self.can1.replace(can);
                 }
             }
@@ -180,6 +181,7 @@ impl Device for UsbCanDevice {
                     // Interrupt line 1 and 0 are swapped
                     // https://github.com/stm32-rs/fdcan/issues/59
                     can.enable_interrupt_line(InterruptLine::_1, false);
+                    can.clear_interrupts(Interrupts::all());
                     self.can2.replace(can);
                 }
             }

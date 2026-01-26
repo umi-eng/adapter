@@ -21,6 +21,7 @@ use embedded_can::Frame;
 use fdcan::{
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
+    LastErrorCode, ReceiveErrorOverflow,
 };
 use fugit::ExtU32;
 use hal::rcc;
@@ -42,8 +43,22 @@ use usb_device::{
     device::{StringDescriptors, UsbDevice, UsbDeviceBuilder},
 };
 use usbd_dfu::DfuClass;
-use usbd_gscan::{host::FrameFlag, GsCan};
+use usbd_gscan::{
+    errors::{ControllerError, THRESHOLD_PASSIVE, THRESHOLD_WARNING},
+    host::FrameFlag,
+    GsCan,
+};
 use vpd::VitalProductData;
+
+const BUS_ERR_INTERRUPTS: Interrupts = Interrupts::from_bits_truncate(
+    Interrupts::BUS_OFF.bits()
+        | Interrupts::ERR_PASSIVE.bits()
+        | Interrupts::WARNING_STATUS.bits(),
+);
+/// Bus error group interrupt line selection
+const CAN_ILS_BERR: u32 = 1 << 5;
+/// Protocol error group interruptline selection
+const CAN_ILS_PERR: u32 = 1 << 6;
 
 // The 32-bit counter will overflow every 49.7 days.
 // A 64-bit counter cannot be used due to armv7 atomics limitations.
@@ -175,8 +190,9 @@ mod app {
         let gpioa = cx.device.GPIOA.split(&mut rcc);
         let gpiob = cx.device.GPIOB.split(&mut rcc);
 
-        let interrupts =
-            Interrupts::RX_FIFO0_NEW_MSG | Interrupts::RX_FIFO1_NEW_MSG;
+        let interrupts = Interrupts::RX_FIFO0_NEW_MSG
+            | Interrupts::RX_FIFO1_NEW_MSG
+            | BUS_ERR_INTERRUPTS;
 
         let fdcan2 = {
             let rx = gpiob.pb5.into_alternate().set_speed(Speed::VeryHigh);
@@ -186,6 +202,10 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
+            // The fdcan crate doesn't properly implement this flags, so we do this workaround.
+            can.select_interrupt_line_1(unsafe {
+                Interrupts::from_bits_unchecked(CAN_ILS_BERR | CAN_ILS_PERR)
+            });
 
             can.into_normal()
         };
@@ -198,6 +218,10 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
+            // The fdcan crate doesn't properly implement this flags, so we do this workaround.
+            can.select_interrupt_line_1(unsafe {
+                Interrupts::from_bits_unchecked(CAN_ILS_BERR | CAN_ILS_PERR)
+            });
 
             can.into_normal()
         };
@@ -315,6 +339,15 @@ mod app {
         });
     }
 
+    #[task(binds = FDCAN2_INTR1, shared = [usb_can])]
+    fn fdcan2_it1(mut cx: fdcan2_it1::Context) {
+        cx.shared.usb_can.lock(|can| {
+            if let Some(error) = can.device.can1.as_mut().map(handle_error) {
+                can.transmit_error(0, error);
+            }
+        });
+    }
+
     #[task(binds = FDCAN3_INTR0, shared = [usb_dev, usb_can])]
     fn fdcan3_it0(cx: fdcan3_it0::Context) {
         let mut data = [0; 64];
@@ -327,6 +360,63 @@ mod app {
             }
         });
     }
+
+    #[task(binds = FDCAN3_INTR1, shared = [usb_can])]
+    fn fdcan3_it1(mut cx: fdcan3_it1::Context) {
+        cx.shared.usb_can.lock(|can| {
+            if let Some(error) = can.device.can2.as_mut().map(handle_error) {
+                can.transmit_error(1, error);
+            }
+        });
+    }
+}
+
+/// Handle error/warning interrupts and maybe respond with an protocol error.
+pub fn handle_error<F>(
+    can: &mut fdcan::FdCan<F, fdcan::NormalOperationMode>,
+) -> usbd_gscan::errors::Error
+where
+    F: fdcan::Instance,
+{
+    can.clear_interrupts(BUS_ERR_INTERRUPTS);
+
+    let mut error = usbd_gscan::errors::Error::default();
+
+    let ps = can.get_protocol_status();
+    error.bus_error = ps.bus_off_status;
+    error.no_ack = ps.last_error as u8 == LastErrorCode::AckError as u8; // todo: upstream deriving equality traits
+
+    let counters = can.error_counters();
+    let tx_err = counters.transmit_err;
+    let (rx_err, rx_overflow) = match counters.receive_err {
+        ReceiveErrorOverflow::Normal(n) => (n, false),
+        ReceiveErrorOverflow::Overflow(n) => (n, true),
+    };
+    error.tx_rx_error_count = Some((tx_err, rx_err));
+
+    let mut ctrl_err = ControllerError::empty();
+
+    if rx_overflow {
+        ctrl_err |= ControllerError::RX_OVERFLOW;
+    }
+
+    if tx_err as u16 >= THRESHOLD_PASSIVE {
+        ctrl_err |= ControllerError::TX_PASSIVE;
+    } else if tx_err as u16 >= THRESHOLD_WARNING {
+        ctrl_err |= ControllerError::TX_WARNING;
+    }
+
+    if rx_err as u16 >= THRESHOLD_PASSIVE {
+        ctrl_err |= ControllerError::RX_PASSIVE;
+    } else if rx_err as u16 >= THRESHOLD_WARNING {
+        ctrl_err |= ControllerError::RX_WARNING;
+    }
+
+    if !ctrl_err.is_empty() {
+        error.controller = Some(ctrl_err);
+    }
+
+    error
 }
 
 /// Ingest the frame from the given FIFO queue.

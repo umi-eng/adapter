@@ -11,7 +11,7 @@ Based on the gs_usb protocol, this firmware is plug and play on most recent linu
 | Tripple-sampling                             | Yes            |
 | One-shot                                     | Yes            |
 | Hardware timestamp                           | No             |
-| Bus error reporting                          | No             |
+| Bus error reporting                          | Yes            |
 | FD (ISO 11898-1:2015)                        | Yes            |
 | Bitrate switching                            | Yes            |
 | FD Non-ISO mode                              | No<sup>2</sup> |

@@ -5,6 +5,7 @@
 - Show error instead of blocking on transmit overflow.
 - Enable interface state request feature.
 - Clear pending interrupts on interface reset.
+- Implement bus error reporting.
 
 ## v0.2.4
 

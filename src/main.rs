@@ -63,7 +63,7 @@ const CAN_ILS_PERR: u32 = 1 << 6;
 // The 32-bit counter will overflow every 49.7 days.
 // A 64-bit counter cannot be used due to armv7 atomics limitations.
 systick_monotonic!(Mono, 1_000);
-defmt::timestamp!("{=u32:us}", Mono::now().duration_since_epoch().to_micros());
+defmt::timestamp!("{=u32:tms}", Mono::now().duration_since_epoch().to_millis());
 
 #[rtic::app(device = stm32g4xx_hal::stm32, peripherals = true)]
 mod app {

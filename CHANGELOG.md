@@ -6,6 +6,7 @@
 - Enable interface state request feature.
 - Clear pending interrupts on interface reset.
 - Implement bus error reporting.
+- Use millisecond human-readable format for defmt timestamp.
 
 ## v0.2.4
 

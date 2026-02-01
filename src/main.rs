@@ -19,17 +19,17 @@ use can::id_to_embedded;
 use core::mem::MaybeUninit;
 use embedded_can::Frame;
 use fdcan::{
+    LastErrorCode, ReceiveErrorOverflow,
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
-    LastErrorCode, ReceiveErrorOverflow,
 };
 use fugit::ExtU32;
 use hal::rcc;
 use hal::{
     can::CanExt,
     gpio::{
-        gpioa::{PA11, PA12},
         Speed,
+        gpioa::{PA11, PA12},
     },
     independent_watchdog::IndependentWatchdog,
     prelude::*,
@@ -44,9 +44,9 @@ use usb_device::{
 };
 use usbd_dfu::DfuClass;
 use usbd_gscan::{
+    GsCan,
     errors::{ControllerError, THRESHOLD_PASSIVE, THRESHOLD_WARNING},
     host::FrameFlag,
-    GsCan,
 };
 use vpd::VitalProductData;
 

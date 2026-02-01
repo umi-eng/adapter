@@ -8,21 +8,21 @@ use crate::hal::{
     stm32::{FDCAN2, FDCAN3},
     time::Hertz,
 };
-use core::num::{NonZeroU16, NonZeroU8};
+use core::num::{NonZeroU8, NonZeroU16};
 use embedded_can::{Frame as _, Id};
 use fdcan::{
+    FdCan, ReceiveErrorOverflow,
     config::{DataBitTiming, InterruptLine, Interrupts, NominalBitTiming},
     frame::FrameFormat,
-    FdCan, ReceiveErrorOverflow,
 };
-use fdcan::{frame::TxFrameHeader, NormalOperationMode};
+use fdcan::{NormalOperationMode, frame::TxFrameHeader};
 use usbd_gscan::{
+    Device,
     host::{
         CanBitTimingConst, CanState, DeviceBitTiming, DeviceBitTimingConst,
         DeviceBitTimingConstExtended, DeviceConfig, DeviceState, Feature,
         FrameFlag,
     },
-    Device,
 };
 
 const TIMING_NOMINAL: CanBitTimingConst = CanBitTimingConst {

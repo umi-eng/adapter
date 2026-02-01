@@ -19,17 +19,17 @@ use can::id_to_embedded;
 use core::mem::MaybeUninit;
 use embedded_can::Frame;
 use fdcan::{
+    LastErrorCode, ReceiveErrorOverflow,
     config::{FrameTransmissionConfig, Interrupt, Interrupts},
     frame::FrameFormat,
-    LastErrorCode, ReceiveErrorOverflow,
 };
 use fugit::ExtU32;
 use hal::rcc;
 use hal::{
     can::CanExt,
     gpio::{
-        gpioa::{PA11, PA12},
         Speed,
+        gpioa::{PA11, PA12},
     },
     independent_watchdog::IndependentWatchdog,
     prelude::*,
@@ -44,9 +44,9 @@ use usb_device::{
 };
 use usbd_dfu::DfuClass;
 use usbd_gscan::{
+    GsCan,
     errors::{ControllerError, THRESHOLD_PASSIVE, THRESHOLD_WARNING},
     host::FrameFlag,
-    GsCan,
 };
 use vpd::VitalProductData;
 
@@ -330,11 +330,11 @@ mod app {
     fn fdcan2_it0(cx: fdcan2_it0::Context) {
         let mut data = [0; 64];
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can1 {
-                if let Some(frame) = handle_fifo(can, &mut data) {
-                    usb_can.transmit(0, &frame, frame.flags);
-                    usb_dev.poll(&mut [usb_can]);
-                }
+            if let Some(can) = &mut usb_can.device.can1
+                && let Some(frame) = handle_fifo(can, &mut data)
+            {
+                usb_can.transmit(0, &frame, frame.flags);
+                usb_dev.poll(&mut [usb_can]);
             }
         });
     }
@@ -352,11 +352,11 @@ mod app {
     fn fdcan3_it0(cx: fdcan3_it0::Context) {
         let mut data = [0; 64];
         (cx.shared.usb_dev, cx.shared.usb_can).lock(|usb_dev, usb_can| {
-            if let Some(can) = &mut usb_can.device.can2 {
-                if let Some(frame) = handle_fifo(can, &mut data) {
-                    usb_can.transmit(1, &frame, frame.flags);
-                    usb_dev.poll(&mut [usb_can]);
-                }
+            if let Some(can) = &mut usb_can.device.can2
+                && let Some(frame) = handle_fifo(can, &mut data)
+            {
+                usb_can.transmit(1, &frame, frame.flags);
+                usb_dev.poll(&mut [usb_can]);
             }
         });
     }

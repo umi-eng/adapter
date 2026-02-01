@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.3.0
+
 - Show error instead of blocking on transmit overflow.
 - Enable interface state request feature.
 - Clear pending interrupts on interface reset.

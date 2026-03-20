@@ -1,4 +1,5 @@
-# CAN FD Adapter Firmware
+<img src="assets/banner-light.png#gh-light-mode-only" alt="CAN FD Adapter Firmware">
+<img src="assets/banner-dark.png#gh-dark-mode-only" alt="CAN FD Adapter Firmware">
 
 A single unified codebase for CAN adapters in many form factors.
 

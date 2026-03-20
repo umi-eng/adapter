@@ -146,6 +146,7 @@ impl defmt::Format for Version {
 pub enum SkuId {
     M2KeyB = 1,
     MiniPCIe = 2,
+    M2KeyE = 3,
 }
 
 impl TryFrom<u8> for SkuId {
@@ -155,6 +156,7 @@ impl TryFrom<u8> for SkuId {
         match value {
             x if x == Self::M2KeyB as u8 => Ok(Self::M2KeyB),
             x if x == Self::MiniPCIe as u8 => Ok(Self::MiniPCIe),
+            x if x == Self::M2KeyE as u8 => Ok(Self::M2KeyE),
             _ => Err(value),
         }
     }

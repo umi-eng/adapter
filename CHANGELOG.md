@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add M.2 E-key SKU.
+
 ## v0.3.0
 
 - Show error instead of blocking on transmit overflow.

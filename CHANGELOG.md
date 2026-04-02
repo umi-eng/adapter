@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v0.3.1
+
 - Add M.2 E-key SKU.
 
 ## v0.3.0

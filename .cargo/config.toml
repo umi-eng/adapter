@@ -1,5 +1,4 @@
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
-runner = "probe-rs run --chip STM32G474CEUx --connect-under-reset"
 rustflags = [
     "-C",
     "linker=flip-link",
@@ -8,6 +7,7 @@ rustflags = [
     "-C",
     "link-arg=-Tdefmt.x",
 ]
+runner = "probe-rs run --chip STM32G474CEUx"
 
 [build]
 target = "thumbv7em-none-eabihf"

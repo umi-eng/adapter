@@ -243,7 +243,7 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 [[package]]
 name = "fdcan"
 version = "0.2.1"
-source = "git+https://github.com/umi-eng/fdcan?branch=adapter-hotfix#c826ffc73cbbb20f204da0d573390c230dcc4a66"
+source = "git+https://github.com/umi-eng/fdcan?branch=adapter-hotfix#c58acc9facfb61ae1051bcdf7d621d0cd9a9201a"
 dependencies = [
  "bitflags 1.3.2",
  "nb 1.1.0",

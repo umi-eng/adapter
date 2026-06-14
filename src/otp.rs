@@ -2,7 +2,8 @@
 //!
 //! Read and write operations for OTP memory.
 
-use crate::{dfu::KEY, hal::stm32::FLASH};
+use crate::dfu::KEY;
+use crate::hal::stm32::FLASH;
 
 const OTP_LEN: usize = 1024; // 1 kilobyte
 const OTP_ADDRESS: *const u8 = 0x1FFF7000 as *const u8;

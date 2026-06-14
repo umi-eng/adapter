@@ -3,27 +3,33 @@
 //! This module implements the USB-CAN device which implements the gs_usb
 //! protocol.
 
-use crate::hal::{
-    can::Can,
-    stm32::{FDCAN2, FDCAN3},
-    time::Hertz,
-};
-use core::num::{NonZeroU8, NonZeroU16};
-use embedded_can::{Frame as _, Id};
-use fdcan::{
-    FdCan, ReceiveErrorOverflow,
-    config::{DataBitTiming, InterruptLine, Interrupts, NominalBitTiming},
-    frame::FrameFormat,
-};
-use fdcan::{NormalOperationMode, frame::TxFrameHeader};
-use usbd_gscan::{
-    Device,
-    host::{
-        CanBitTimingConst, CanState, DeviceBitTiming, DeviceBitTimingConst,
-        DeviceBitTimingConstExtended, DeviceConfig, DeviceState, Feature,
-        FrameFlag,
-    },
-};
+use crate::hal::can::Can;
+use crate::hal::stm32::FDCAN2;
+use crate::hal::stm32::FDCAN3;
+use crate::hal::time::Hertz;
+use core::num::NonZeroU8;
+use core::num::NonZeroU16;
+use embedded_can::Frame as _;
+use embedded_can::Id;
+use fdcan::FdCan;
+use fdcan::NormalOperationMode;
+use fdcan::ReceiveErrorOverflow;
+use fdcan::config::DataBitTiming;
+use fdcan::config::InterruptLine;
+use fdcan::config::Interrupts;
+use fdcan::config::NominalBitTiming;
+use fdcan::frame::FrameFormat;
+use fdcan::frame::TxFrameHeader;
+use usbd_gscan::Device;
+use usbd_gscan::host::CanBitTimingConst;
+use usbd_gscan::host::CanState;
+use usbd_gscan::host::DeviceBitTiming;
+use usbd_gscan::host::DeviceBitTimingConst;
+use usbd_gscan::host::DeviceBitTimingConstExtended;
+use usbd_gscan::host::DeviceConfig;
+use usbd_gscan::host::DeviceState;
+use usbd_gscan::host::Feature;
+use usbd_gscan::host::FrameFlag;
 
 const TIMING_NOMINAL: CanBitTimingConst = CanBitTimingConst {
     tseg1_min: 1,

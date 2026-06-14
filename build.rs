@@ -1,8 +1,13 @@
-use chrono::{DateTime, SecondsFormat, Utc};
-use std::{
-    fs::File, io::Write, path::PathBuf, process::Command, time::SystemTime,
-};
-use tlvc_text::{load, pack};
+use chrono::DateTime;
+use chrono::SecondsFormat;
+use chrono::Utc;
+use std::fs::File;
+use std::io::Write;
+use std::path::PathBuf;
+use std::process::Command;
+use std::time::SystemTime;
+use tlvc_text::load;
+use tlvc_text::pack;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // get output directory

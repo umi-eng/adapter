@@ -3,7 +3,9 @@
 //! USB firmware upgrade implementation.
 
 use crate::hal::cortex_m;
-use crate::hal::stm32::{CPUID, FLASH, SCB};
+use crate::hal::stm32::CPUID;
+use crate::hal::stm32::FLASH;
+use crate::hal::stm32::SCB;
 use core::ops::RangeInclusive;
 use usbd_dfu::*;
 

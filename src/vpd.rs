@@ -21,10 +21,14 @@
 //! each key for corrupt or malformed data. This ensures that the device will
 //! still sucessfully start up rather than being bricked.
 
-use core::{convert::Infallible, fmt::Formatter};
+use core::convert::Infallible;
+use core::fmt::Formatter;
 use defmt::Format;
-use tlvc::{TlvcReadError, TlvcReader};
-use zerocopy::{AsBytes, FromBytes, FromZeroes};
+use tlvc::TlvcReadError;
+use tlvc::TlvcReader;
+use zerocopy::AsBytes;
+use zerocopy::FromBytes;
+use zerocopy::FromZeroes;
 
 /// Vital product data
 #[derive(Debug, Format)]

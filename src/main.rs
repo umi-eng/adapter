@@ -18,36 +18,36 @@ use stm32g4xx_hal as hal;
 use can::id_to_embedded;
 use core::mem::MaybeUninit;
 use embedded_can::Frame;
-use fdcan::{
-    LastErrorCode, ReceiveErrorOverflow,
-    config::{FrameTransmissionConfig, Interrupt, Interrupts},
-    frame::FrameFormat,
-};
+use fdcan::LastErrorCode;
+use fdcan::ReceiveErrorOverflow;
+use fdcan::config::FrameTransmissionConfig;
+use fdcan::config::Interrupt;
+use fdcan::config::Interrupts;
+use fdcan::frame::FrameFormat;
 use fugit::ExtU32;
+use hal::can::CanExt;
+use hal::gpio::Speed;
+use hal::gpio::gpioa::PA11;
+use hal::gpio::gpioa::PA12;
+use hal::independent_watchdog::IndependentWatchdog;
+use hal::prelude::*;
+use hal::pwr::PwrExt;
+use hal::pwr::VoltageScale;
 use hal::rcc;
-use hal::{
-    can::CanExt,
-    gpio::{
-        Speed,
-        gpioa::{PA11, PA12},
-    },
-    independent_watchdog::IndependentWatchdog,
-    prelude::*,
-    pwr::{PwrExt, VoltageScale},
-    time::RateExtU32,
-    usb::{Peripheral, UsbBus},
-};
+use hal::time::RateExtU32;
+use hal::usb::Peripheral;
+use hal::usb::UsbBus;
 use rtic_monotonics::systick::prelude::*;
-use usb_device::{
-    bus::UsbBusAllocator,
-    device::{StringDescriptors, UsbDevice, UsbDeviceBuilder},
-};
+use usb_device::bus::UsbBusAllocator;
+use usb_device::device::StringDescriptors;
+use usb_device::device::UsbDevice;
+use usb_device::device::UsbDeviceBuilder;
 use usbd_dfu::DfuClass;
-use usbd_gscan::{
-    GsCan,
-    errors::{ControllerError, THRESHOLD_PASSIVE, THRESHOLD_WARNING},
-    host::FrameFlag,
-};
+use usbd_gscan::GsCan;
+use usbd_gscan::errors::ControllerError;
+use usbd_gscan::errors::THRESHOLD_PASSIVE;
+use usbd_gscan::errors::THRESHOLD_WARNING;
+use usbd_gscan::host::FrameFlag;
 use vpd::VitalProductData;
 
 const BUS_ERR_INTERRUPTS: Interrupts = Interrupts::from_bits_truncate(

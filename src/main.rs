@@ -202,7 +202,8 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
-            // The fdcan crate doesn't properly implement this flags, so we do this workaround.
+            // The fdcan crate doesn't properly implement this flags, so we do
+            // this workaround.
             can.select_interrupt_line_1(unsafe {
                 Interrupts::from_bits_unchecked(CAN_ILS_BERR | CAN_ILS_PERR)
             });
@@ -218,7 +219,8 @@ mod app {
             can.set_protocol_exception_handling(false);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
-            // The fdcan crate doesn't properly implement this flags, so we do this workaround.
+            // The fdcan crate doesn't properly implement this flags, so we do
+            // this workaround.
             can.select_interrupt_line_1(unsafe {
                 Interrupts::from_bits_unchecked(CAN_ILS_BERR | CAN_ILS_PERR)
             });

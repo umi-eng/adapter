@@ -172,13 +172,13 @@ mod app {
         if option_env!("WRITE_VPD").is_some() {
             let raw_vpd = include_bytes!(concat!(env!("OUT_DIR"), "/vpd.bin"));
             // check VPD parses correctly.
-            VitalProductData::from_tlvc(raw_vpd).unwrap();
+            VitalProductData::from_tlvc(raw_vpd).expect("read injected vpd");
             if let Err(e) = otp::write(&mut cx.device.FLASH, raw_vpd, 0) {
                 defmt::error!("{}", e);
             }
         }
 
-        let vpd = VitalProductData::from_tlvc(otp::read()).unwrap();
+        let vpd = VitalProductData::from_tlvc(otp::read()).expect("read vpd");
 
         defmt::info!(
             "serial={} hardware={} sku={}",
@@ -251,7 +251,7 @@ mod app {
             cx.local.serial_string,
             format_args!("{}", vpd.serial),
         )
-        .unwrap();
+        .expect("write serial string");
 
         let usb_dev =
             UsbDeviceBuilder::new(usb, usbd_gscan::identifier::GS_USB_1)
@@ -259,15 +259,15 @@ mod app {
                     .manufacturer("Universal Machine Intelligence")
                     .product("CAN FD Adapter")
                     .serial_number(cx.local.serial_string.as_str())])
-                .unwrap()
+                .expect("build device strings")
                 .device_class(usbd_gscan::INTERFACE_CLASS)
                 .usb_rev(usb_device::device::UsbRev::Usb200)
                 .device_sub_class(0xFF)
                 .device_protocol(0xFF)
                 .max_packet_size_0(64)
-                .unwrap()
+                .expect("max packet size endpoint 0")
                 .max_power(150)
-                .unwrap()
+                .expect("max power")
                 .build();
 
         watchdog::spawn().unwrap();

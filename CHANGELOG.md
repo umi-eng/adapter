@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Replace instances of `.unwrap()` with `.expect()` including discriptions for
+  panic messages.
+
 ## v0.3.1
 
 - Add M.2 E-key SKU.

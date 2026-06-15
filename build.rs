@@ -1,11 +1,8 @@
-use chrono::DateTime;
-use chrono::SecondsFormat;
-use chrono::Utc;
+use jiff::Timestamp;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
-use std::time::SystemTime;
 use tlvc_text::load;
 use tlvc_text::pack;
 
@@ -32,11 +29,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:rustc-link-search={}", out.display());
 
     // inject compilation timestamp
-    let date_time: DateTime<Utc> = SystemTime::now().into();
-    println!(
-        "cargo:rustc-env=CRATE_BUILT_AT={}",
-        date_time.to_rfc3339_opts(SecondsFormat::Secs, true)
-    );
+    let timestamp: Timestamp = Timestamp::now();
+    println!("cargo:rustc-env=CRATE_BUILT_AT={}", timestamp.as_second());
 
     // inject git commit hash
     let git_hash = String::from_utf8(

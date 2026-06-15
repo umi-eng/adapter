@@ -42,5 +42,5 @@ rev = "27f0f4a"
 version = "0.3.1"
 
 [build-dependencies]
-chrono = { version = "0.4.39", default-features = false, features = ["std"] }
 tlvc-text = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.0" }
+jiff = "0.2.28"

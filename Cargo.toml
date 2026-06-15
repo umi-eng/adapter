@@ -13,7 +13,7 @@ rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
 zerocopy = "0.7.35"
 usb-device = { version = "0.3.2", features = ["defmt"] }
 embedded-can = "0.4.1"
-heapless = "0.8.0"
+heapless = "0.9.3"
 nb = "1.1.0"
 
 [dependencies.stm32g4xx-hal]

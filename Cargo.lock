@@ -708,7 +708,7 @@ dependencies = [
  "defmt-rtt",
  "embedded-can",
  "fdcan",
- "heapless 0.8.0",
+ "heapless 0.9.3",
  "nb 1.1.0",
  "panic-probe",
  "rtic",

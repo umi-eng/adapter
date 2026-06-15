@@ -29,9 +29,8 @@ branch = "adapter-hotfix"
 features = ["fdcan_g0_g4_l5"]
 
 [dependencies.usbd-gscan]
-git = "https://github.com/umi-eng/usbd-gscan"
 version = "0.1.0"
-features = ["defmt-03"]
+features = ["defmt"]
 
 [dependencies.usbd-dfu]
 version = "0.4.0"

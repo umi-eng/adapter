@@ -26,9 +26,9 @@ use core::fmt::Formatter;
 use defmt::Format;
 use tlvc::TlvcReadError;
 use tlvc::TlvcReader;
-use zerocopy::AsBytes;
 use zerocopy::FromBytes;
-use zerocopy::FromZeroes;
+use zerocopy::FromZeros;
+use zerocopy::IntoBytes;
 
 /// Vital product data
 #[derive(Debug, Format)]
@@ -67,7 +67,7 @@ impl VitalProductData {
 
     /// Process a TLV-C chunk, unmarshalling the given type from the data or
     /// returning `None` if that fails.
-    fn process_chunk<T: FromBytes + AsBytes + FromZeroes>(
+    fn process_chunk<T: FromBytes + IntoBytes + FromZeros>(
         chunk: &tlvc::ChunkHandle<&[u8]>,
     ) -> Result<Option<T>, TlvcReadError<Infallible>> {
         if chunk.len() as usize != core::mem::size_of::<T>() {
@@ -79,13 +79,13 @@ impl VitalProductData {
         chunk.check_body_checksum(&mut checksum_buf)?;
 
         let mut out = T::new_zeroed();
-        chunk.read_exact(0, out.as_bytes_mut())?;
+        chunk.read_exact(0, out.as_mut_bytes())?;
         Ok(Some(out))
     }
 }
 
 /// Serial number.
-#[derive(Debug, AsBytes, FromZeroes, FromBytes)]
+#[derive(Debug, IntoBytes, FromBytes)]
 #[repr(C)]
 pub struct Serial {
     pub year: u8,
@@ -121,7 +121,7 @@ impl core::fmt::Display for Serial {
 }
 
 /// Semantic version number.
-#[derive(Debug, Default, AsBytes, FromZeroes, FromBytes)]
+#[derive(Debug, Default, IntoBytes, FromBytes)]
 #[repr(C)]
 pub struct Version {
     pub major: u8,

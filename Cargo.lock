@@ -719,7 +719,7 @@ dependencies = [
  "usb-device",
  "usbd-dfu",
  "usbd-gscan",
- "zerocopy 0.7.35",
+ "zerocopy 0.8.52",
 ]
 
 [[package]]

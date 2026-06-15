@@ -10,7 +10,7 @@ defmt-rtt = "1.2.0"
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
-zerocopy = "0.7.35"
+zerocopy = "0.8.52"
 usb-device = { version = "0.3.2", features = ["defmt"] }
 embedded-can = "0.4.1"
 heapless = "0.9.3"

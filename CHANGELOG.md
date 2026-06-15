@@ -4,6 +4,12 @@
 
 - Replace instances of `.unwrap()` with `.expect()` including discriptions for
   panic messages.
+- Use crates.io source for `usbd-gscan` crate.
+- Update defmt crate.
+- Update heapless crate.
+- Update zerocopy crate.
+- Update rtic.
+- Replace chrono with jiff.
 
 ## v0.3.1
 

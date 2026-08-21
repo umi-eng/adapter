@@ -2,6 +2,7 @@ name: Changelog
 
 on:
   pull_request:
+    paths: ["firmware"]
     types: [ opened, reopened, labeled, unlabeled, synchronize ]
   merge_group:
 

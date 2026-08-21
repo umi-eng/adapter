@@ -10,6 +10,7 @@
 - Update zerocopy crate.
 - Update rtic.
 - Replace chrono with jiff.
+- Update Rust to 1.98.0.
 
 ## v0.3.1
 

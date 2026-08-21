@@ -1,0 +1,46 @@
+[package]
+name = "umi-canfd-adapter"
+version = "0.3.1"
+edition = "2024"
+license = "MPL-2.0"
+
+[dependencies]
+defmt = "1.1.0"
+defmt-rtt = "1.2.0"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+rtic = { version = "2.2.0", features = ["thumbv7-backend"] }
+rtic-monotonics = { version = "2.1.0", features = ["cortex-m-systick"] }
+zerocopy = "0.8.52"
+usb-device = { version = "0.3.2", features = ["defmt"] }
+embedded-can = "0.4.1"
+heapless = "0.9.3"
+nb = "1.1.0"
+
+[dependencies.stm32g4xx-hal]
+version = "0.0.2"
+features = ["stm32g474", "usb"]
+git = "https://github.com/umi-eng/stm32g4xx-hal"
+branch = "adapter-hotfix"
+
+[dependencies.fdcan]
+version = "0.2.1"
+git = "https://github.com/umi-eng/fdcan"
+branch = "adapter-hotfix"
+features = ["fdcan_g0_g4_l5"]
+
+[dependencies.usbd-gscan]
+version = "0.1.0"
+features = ["defmt"]
+
+[dependencies.usbd-dfu]
+version = "0.4.0"
+git = "https://github.com/umi-eng/usbd-dfu"
+
+[dependencies.tlvc]
+git = "https://github.com/umi-eng/tlvc"
+rev = "27f0f4a"
+version = "0.3.1"
+
+[build-dependencies]
+tlvc-text = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.0" }
+jiff = "0.2.28"

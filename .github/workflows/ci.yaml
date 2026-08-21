@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Firmware
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - run: rustup toolchain install
       - run: rustup component add rustfmt
       - name: Check format
-        run: cargo fmt --all -- --check
+        run: cargo fmt --all -p umi-canfd-adapter -- --check
 
   check:
     name: Check
@@ -32,7 +32,10 @@ jobs:
         uses: swatinem/rust-cache@v2
       - run: rustup toolchain install
       - run: cargo install flip-link --version 0.1.9
-      - run: cargo check
+      - run: |
+          cargo check \
+            -p umi-canfd-adapter \
+            --target thumbv7em-none-eabihf
 
   clippy:
     name: Clippy
@@ -43,7 +46,13 @@ jobs:
       - run: rustup toolchain install
       - run: rustup component add clippy
       - name: Check clippy
-        run: cargo clippy --all-features --locked -- -D warnings
+        run: |
+          cargo clippy \
+            --all-features \
+            --locked \
+            -p umi-canfd-adapter \
+            --target thumbv7em-none-eabihf \
+            -- -D warnings
 
   release:
     name: Release
@@ -89,7 +98,11 @@ jobs:
           echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
           echo "Versions match: ${TAG_VERSION}"
           echo "filename=umi-adapter-v${TAG_VERSION}.bin" >> $GITHUB_OUTPUT
-      - run: cargo objcopy --release -- -O binary ${{ steps.get-version.outputs.filename }}
+      - run: |
+          cargo objcopy \
+          --release \
+          --target thumbv7em-none-eabihf \
+          -- -O binary ${{ steps.get-version.outputs.filename }}
       - name: Install dfu-utils
         run: sudo apt-get install -y dfu-util
       - run: dfu-suffix --vid 1d50 --pid 606f --add ${{ steps.get-version.outputs.filename }}

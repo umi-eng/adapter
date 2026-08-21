@@ -30,7 +30,7 @@ pub struct SwitchBanks {
     bank: Option<Bank>,
 
     /// Do not reload the option bytes and restart the MCU.
-    #[arg(long, visible_alias = "no_restart")]
+    #[arg(long)]
     no_restart: bool,
 }
 

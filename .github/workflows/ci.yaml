@@ -31,7 +31,7 @@ jobs:
       - name: Cache Rust
         uses: swatinem/rust-cache@v2
       - run: rustup toolchain install
-      - run: cargo install flip-link --version 0.1.9
+      - run: cargo install flip-link --version 0.1.12
       - run: |
           cargo check \
             -p umi-canfd-adapter \
@@ -70,7 +70,7 @@ jobs:
       - run: rustup toolchain install
       - run: rustup component add llvm-tools-preview
       - run: cargo install cargo-binutils --locked
-      - run: cargo install flip-link --version 0.1.9 --locked
+      - run: cargo install flip-link --version 0.1.12 --locked
       - name: Get tag version
         id: get-tag
         run: |

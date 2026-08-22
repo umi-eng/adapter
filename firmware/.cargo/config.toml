@@ -7,7 +7,7 @@ rustflags = [
     "-C",
     "link-arg=-Tdefmt.x",
 ]
-runner = "probe-rs run --chip STM32G474CEUx"
+runner = "probe-rs run --chip STM32G473CEUx"
 
 [build]
 target = "thumbv7em-none-eabihf"

@@ -195,6 +195,15 @@ pub enum MaybeSku {
     Unknown(u8),
 }
 
+impl core::fmt::Display for MaybeSku {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::Known(sku) => sku.fmt(f),
+            Self::Unknown(value) => write!(f, "Unknown ({value})"),
+        }
+    }
+}
+
 impl MaybeSku {
     /// Return the numeric value stored in TLV-C.
     pub fn id(self) -> u8 {

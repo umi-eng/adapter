@@ -8,3 +8,4 @@ anyhow = "1.0.104"
 clap = { version = "4.6.6", features = ["env", "derive"] }
 probe-rs = "0.32.0"
 vpd = { path = "../vpd", features = ["host"] }
+tlvc = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.1" }

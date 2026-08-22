@@ -1960,6 +1960,7 @@ dependencies = [
  "anyhow",
  "clap",
  "probe-rs",
+ "tlvc",
  "vpd",
 ]
 

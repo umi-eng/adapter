@@ -44,7 +44,7 @@ impl SwitchBanks {
             .context("no debug probe found")?;
         let probe = probe_info.open().context("failed to open debug probe")?;
         let mut session = probe
-            .attach("STM32G474CEUx", Permissions::default())
+            .attach("STM32G473CEUx", Permissions::default())
             .with_context(|| format!("failed to attach to target"))?;
         let mut core = session.core(0).context("failed to access MCU core")?;
 

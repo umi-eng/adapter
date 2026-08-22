@@ -18,7 +18,7 @@ nb = "1.1.0"
 
 [dependencies.stm32g4xx-hal]
 version = "0.0.2"
-features = ["stm32g474", "usb"]
+features = ["stm32g473", "usb"]
 git = "https://github.com/umi-eng/stm32g4xx-hal"
 branch = "adapter-hotfix"
 

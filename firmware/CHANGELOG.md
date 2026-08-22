@@ -11,6 +11,7 @@
 - Update rtic.
 - Replace chrono with jiff.
 - Update Rust to 1.98.0.
+- Support both STM32G474 and STM32G473 targets.
 
 ## v0.3.1
 

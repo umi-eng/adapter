@@ -105,12 +105,6 @@ checksum = "f8fe8f5a8a398345e52358e18ff07cc17a568fbca5c6f73873d3a62056309603"
 
 [[package]]
 name = "base64"
-version = "0.21.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
-
-[[package]]
-name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
@@ -178,9 +172,6 @@ name = "bitflags"
 version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4388bee8683e3d04af747c73422af53102d2bd24d9eadb6cbc100baef4b43f8"
-dependencies = [
- "serde_core",
-]
 
 [[package]]
 name = "bitvec"
@@ -1155,7 +1146,7 @@ version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e62b48663680a8b074166214b90a6d4f9153f823edaab1fe9f67e0b9ac33efd1"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "bincode",
  "indexmap",
  "jep106",
@@ -1236,18 +1227,6 @@ checksum = "72f81bee8c8ef9b577d1681a70ebbc962c232461e397b22c208c43c04b67a155"
 dependencies = [
  "rmp",
  "serde",
-]
-
-[[package]]
-name = "ron"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b91f7eff05f748767f183df4320a63d6936e9c6107d97c9e6bdd9784f4289c94"
-dependencies = [
- "base64 0.21.7",
- "bitflags 2.13.0",
- "serde",
- "serde_derive",
 ]
 
 [[package]]
@@ -1445,7 +1424,7 @@ version = "3.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee78f1fbe43ac4a0e47aadb3dbd357b69eb0d3793e948624cd03dd2750ab1c0a"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "bs58",
  "chrono",
  "hex",
@@ -1657,17 +1636,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tlvc-text"
-version = "0.3.0"
-source = "git+https://github.com/umi-eng/tlvc?rev=27f0f4a#27f0f4a91111235f1f51f9aecbe6eca472139f3f"
-dependencies = [
- "ron",
- "serde",
- "tlvc",
- "zerocopy 0.7.35",
-]
-
-[[package]]
 name = "tracing"
 version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1720,10 +1688,10 @@ dependencies = [
  "rtic-monotonics",
  "stm32g4xx-hal",
  "tlvc",
- "tlvc-text",
  "usb-device",
  "usbd-dfu",
  "usbd-gscan",
+ "vpd",
  "zerocopy 0.8.52",
 ]
 
@@ -1812,6 +1780,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de437e2a6208b014ab52972a27e59b33fa2920d3e00fe05026167a1c509d19cc"
 dependencies = [
  "vcell",
+]
+
+[[package]]
+name = "vpd"
+version = "0.1.0"
+dependencies = [
+ "defmt 1.1.0",
+ "tlvc",
+ "zerocopy 0.8.52",
 ]
 
 [[package]]
@@ -1983,6 +1960,7 @@ dependencies = [
  "anyhow",
  "clap",
  "probe-rs",
+ "vpd",
 ]
 
 [[package]]

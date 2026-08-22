@@ -8,8 +8,6 @@
 
 mod can;
 mod dfu;
-mod otp;
-mod vpd;
 
 use defmt_rtt as _;
 use panic_probe as _;
@@ -93,7 +91,7 @@ mod app {
         usb: MaybeUninit<UsbBusAllocator<Usb>> = MaybeUninit::uninit(),
         serial_string: heapless::String<9> = heapless::String::new()
     ])]
-    fn init(mut cx: init::Context) -> (Shared, Local) {
+    fn init(cx: init::Context) -> (Shared, Local) {
         defmt::info!("init=start");
 
         defmt::info!(
@@ -169,16 +167,7 @@ mod app {
             wd
         };
 
-        if option_env!("WRITE_VPD").is_some() {
-            let raw_vpd = include_bytes!(concat!(env!("OUT_DIR"), "/vpd.bin"));
-            // check VPD parses correctly.
-            VitalProductData::from_tlvc(raw_vpd).expect("read injected vpd");
-            if let Err(e) = otp::write(&mut cx.device.FLASH, raw_vpd, 0) {
-                defmt::error!("{}", e);
-            }
-        }
-
-        let vpd = VitalProductData::from_tlvc(otp::read()).expect("read vpd");
+        let vpd = VitalProductData::from_tlvc(otp_bytes()).expect("read vpd");
 
         defmt::info!(
             "serial={} hardware={} sku={}",
@@ -478,4 +467,13 @@ where
     } else {
         None
     }
+}
+
+/// Returns a slice to the 1 kilobyte OTP memory.
+#[allow(unused)]
+pub fn otp_bytes() -> &'static [u8] {
+    const OTP_LEN: usize = 1024; // 1 kilobyte
+    const OTP_ADDRESS: *const u8 = 0x1FFF7000 as *const u8;
+
+    unsafe { core::slice::from_raw_parts(OTP_ADDRESS, OTP_LEN) }
 }

@@ -1,0 +1,15 @@
+[package]
+name = "vpd"
+version = "0.1.0"
+edition = "2024"
+license = "MPL-2.0"
+
+[features]
+default = []
+defmt = ["dep:defmt"]
+host = []
+
+[dependencies]
+defmt = { version = "1.1.0", optional = true }
+tlvc = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.1" }
+zerocopy = "0.8.52"

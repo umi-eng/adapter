@@ -30,6 +30,21 @@ Prerequisites:
 cargo run
 ```
 
+### Programming the Vital Product Data
+
+The VPD is written to the one-time programmable memory inside the STM32. It
+contains information like serial number, hardware revision, and device variant
+to be used by the firmware at runtime.
+
+Note: the OTP can only be written to one. Please take care in making sure the
+values are correct before doing so.
+
+```shell
+cargo xtask write-vpd
+# Validate the prompts and target setup without programming:
+cargo xtask write-vpd --dry-run
+```
+
 ### Build
 
 ```shell

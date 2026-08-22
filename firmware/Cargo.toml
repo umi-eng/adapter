@@ -5,6 +5,7 @@ edition = "2024"
 license = "MPL-2.0"
 
 [dependencies]
+vpd = { path = "../vpd", features = ["defmt"] }
 defmt = "1.1.0"
 defmt-rtt = "1.2.0"
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
@@ -42,5 +43,4 @@ rev = "27f0f4a"
 version = "0.3.1"
 
 [build-dependencies]
-tlvc-text = { git = "https://github.com/umi-eng/tlvc", rev = "27f0f4a", version = "0.3.0" }
 jiff = "0.2.28"

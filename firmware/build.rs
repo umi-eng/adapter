@@ -3,24 +3,10 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
-use tlvc_text::load;
-use tlvc_text::pack;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // get output directory
     let out = &PathBuf::from(std::env::var("OUT_DIR")?);
-
-    // optionally inject vital product data
-    println!("cargo:rerun-if-changed=vpd.ron");
-    if let Some(path) = option_env!("WRITE_VPD") {
-        let vpd_file = File::open(path)?;
-        let vpd = pack(&load(vpd_file)?);
-        assert!(vpd.len() <= 1024, "VPD will not fit into OTP memory");
-        File::create(out.join("vpd.bin"))?.write_all(&vpd)?;
-    } else {
-        // write empty file to satisfy clippy
-        File::create(out.join("vpd.bin"))?.set_len(0)?;
-    }
 
     // put `memory.x` in the output directory and ensure it's in the linker
     // search path.

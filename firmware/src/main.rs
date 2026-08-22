@@ -63,7 +63,11 @@ const CAN_ILS_PERR: u32 = 1 << 6;
 systick_monotonic!(Mono, 1_000);
 defmt::timestamp!("{=u32:tms}", Mono::now().duration_since_epoch().to_millis());
 
-#[rtic::app(device = stm32g4xx_hal::stm32, peripherals = true)]
+#[rtic::app(
+    device = stm32g4xx_hal::stm32,
+    peripherals = true,
+    dispatchers = [TIM6_DACUNDER]
+)]
 mod app {
     use super::*;
 
@@ -275,7 +279,19 @@ mod app {
         )
     }
 
-    #[task(local = [watchdog])]
+    /// Sleep until an enabled interrupt makes work runnable.
+    ///
+    /// WFI is intentionally used instead of STOP/deep sleep. USB and FDCAN
+    /// remain fully clocked and their interrupt handlers can wake the core,
+    /// which is important while an IN transfer is waiting for the host.
+    #[idle]
+    fn idle(_: idle::Context) -> ! {
+        loop {
+            rtic::export::wfi();
+        }
+    }
+
+    #[task(priority = 1, local = [watchdog])]
     async fn watchdog(cx: watchdog::Context) {
         loop {
             // Feed watchdog periodically.
@@ -285,7 +301,7 @@ mod app {
         }
     }
 
-    #[task(shared = [usb_dev, usb_can, usb_dfu])]
+    #[task(priority = 1, shared = [usb_dev, usb_can, usb_dfu])]
     async fn usb_poll(mut cx: usb_poll::Context) {
         loop {
             cx.shared.usb_dev.lock(|usb_dev| {

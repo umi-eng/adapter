@@ -1,12 +1,5 @@
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
-rustflags = [
-    "-C",
-    "linker=flip-link",
-    "-C",
-    "link-arg=-Tlink.x",
-    "-C",
-    "link-arg=-Tdefmt.x",
-]
+rustflags = ["-C", "linker=flip-link", "-C", "link-arg=-Tlink.x", "-C", "link-arg=-Tdefmt.x"]
 runner = "probe-rs run --chip STM32G473CEUx"
 
 [build]

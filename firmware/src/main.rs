@@ -21,6 +21,7 @@ use fdcan::ReceiveErrorOverflow;
 use fdcan::config::FrameTransmissionConfig;
 use fdcan::config::Interrupt;
 use fdcan::config::Interrupts;
+use fdcan::config::TimestampSource;
 use fdcan::frame::FrameFormat;
 use fugit::ExtU32;
 use hal::can::CanExt;
@@ -33,6 +34,7 @@ use hal::pwr::PwrExt;
 use hal::pwr::VoltageScale;
 use hal::rcc;
 use hal::time::RateExtU32;
+use hal::timer::Timer;
 use hal::usb::Peripheral;
 use hal::usb::UsbBus;
 use rtic_monotonics::systick::prelude::*;
@@ -89,6 +91,7 @@ mod app {
     #[local]
     struct Local {
         watchdog: IndependentWatchdog,
+        _timestamp_timer: hal::timer::CountDownTimer<hal::stm32::TIM3>,
     }
 
     #[init(local = [
@@ -187,12 +190,17 @@ mod app {
             | Interrupts::RX_FIFO1_NEW_MSG
             | BUS_ERR_INTERRUPTS;
 
+        // Used for both FDCAN timestamp sources.
+        let timestamp_timer = Timer::new(cx.device.TIM3, &rcc.clocks)
+            .start_count_down(1_u32.micros());
+
         let fdcan2 = {
             let rx = gpiob.pb5.into_alternate().set_speed(Speed::VeryHigh);
             let tx = gpiob.pb6.into_alternate().set_speed(Speed::VeryHigh);
             let mut can = cx.device.FDCAN2.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
+            can.set_timestamp_counter_source(TimestampSource::FromTIM3);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
             // The fdcan crate doesn't properly implement this flags, so we do
@@ -210,6 +218,7 @@ mod app {
             let mut can = cx.device.FDCAN3.fdcan(tx, rx, &rcc);
 
             can.set_protocol_exception_handling(false);
+            can.set_timestamp_counter_source(TimestampSource::FromTIM3);
             can.set_frame_transmit(FrameTransmissionConfig::AllowFdCanAndBRS);
             can.enable_interrupts(interrupts);
             // The fdcan crate doesn't properly implement this flags, so we do
@@ -275,7 +284,10 @@ mod app {
                 usb_can,
                 usb_dfu,
             },
-            Local { watchdog },
+            Local {
+                watchdog,
+                _timestamp_timer: timestamp_timer,
+            },
         )
     }
 

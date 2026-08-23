@@ -87,7 +87,8 @@ impl Device for UsbCanDevice {
                 | Feature::BT_CONST_EXT
                 | Feature::ONE_SHOT
                 | Feature::TRIPLE_SAMPLE
-                | Feature::GET_STATE,
+                | Feature::GET_STATE
+                | Feature::HW_TIMESTAMP,
             fclk_can: self.clock.to_Hz(),
             timing: TIMING_NOMINAL,
         }
@@ -99,7 +100,8 @@ impl Device for UsbCanDevice {
                 | Feature::BT_CONST_EXT
                 | Feature::ONE_SHOT
                 | Feature::TRIPLE_SAMPLE
-                | Feature::GET_STATE,
+                | Feature::GET_STATE
+                | Feature::HW_TIMESTAMP,
             fclk_can: self.clock.to_Hz(),
             timing_nominal: TIMING_NOMINAL,
             timing_data: TIMING_DATA,
@@ -248,6 +250,17 @@ impl Device for UsbCanDevice {
             state: CanState::Active,
             tx_errors: counters.transmit_err as u32,
             rx_errors: rx_errors as u32,
+        }
+    }
+
+    fn timestamp(&self) -> u32 {
+        // both interfaces return the same hardware timer
+        if let Some(can) = self.can1.as_ref() {
+            can.timestamp() as u32
+        } else if let Some(can) = self.can2.as_ref() {
+            can.timestamp() as u32
+        } else {
+            0
         }
     }
 

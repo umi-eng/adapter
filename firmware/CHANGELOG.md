@@ -15,6 +15,7 @@
 - Remove VPD loading built-ins.
 - Sleep between interrupt using WFI.
 - Update `usbd-gscan` to v0.2.0.
+- Hardware timestamps.
 
 ## v0.3.1
 

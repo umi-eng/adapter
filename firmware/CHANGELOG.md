@@ -14,6 +14,7 @@
 - Support both STM32G474 and STM32G473 targets.
 - Remove VPD loading built-ins.
 - Sleep between interrupt using WFI.
+- Update `usbd-gscan` to v0.2.0.
 
 ## v0.3.1
 

@@ -1737,9 +1737,9 @@ dependencies = [
 
 [[package]]
 name = "usbd-gscan"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6719185baf893bb5738542faa615be07173e9bfb22bd264cdd6b7d8f8998688"
+checksum = "25a02060cdc1af7867ae6d1c3ba158fa0e180b8a67dc27253a99928138adc9b9"
 dependencies = [
  "bitflags 2.13.0",
  "defmt 1.1.0",

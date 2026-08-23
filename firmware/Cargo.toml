@@ -30,7 +30,7 @@ branch = "adapter-hotfix"
 features = ["fdcan_g0_g4_l5"]
 
 [dependencies.usbd-gscan]
-version = "0.1.0"
+version = "0.2.0"
 features = ["defmt"]
 
 [dependencies.usbd-dfu]

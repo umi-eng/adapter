@@ -17,6 +17,7 @@
 - Update `usbd-gscan` to v0.2.0.
 - Hardware timestamps.
 - Don't sleep in debug mode.
+- Device level class, subclass, and protocol should be `0`.
 
 ## v0.3.1
 

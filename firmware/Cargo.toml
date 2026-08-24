@@ -16,6 +16,7 @@ usb-device = { version = "0.3.2", features = ["defmt"] }
 embedded-can = "0.4.1"
 heapless = "0.9.3"
 nb = "1.1.0"
+cortex-m = "0.7"
 
 [dependencies.stm32g4xx-hal]
 version = "0.0.2"

@@ -16,6 +16,7 @@
 - Sleep between interrupt using WFI.
 - Update `usbd-gscan` to v0.2.0.
 - Hardware timestamps.
+- Don't sleep in debug mode.
 
 ## v0.3.1
 

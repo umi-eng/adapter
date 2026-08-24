@@ -299,7 +299,10 @@ mod app {
     #[idle]
     fn idle(_: idle::Context) -> ! {
         loop {
-            rtic::export::wfi();
+            #[cfg(debug_assertions)]
+            cortex_m::asm::nop();
+            #[cfg(not(debug_assertions))]
+            cortex_m::asm::wfi();
         }
     }
 

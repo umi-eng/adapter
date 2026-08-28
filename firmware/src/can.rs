@@ -7,6 +7,7 @@ use crate::hal::can::Can;
 use crate::hal::stm32::FDCAN2;
 use crate::hal::stm32::FDCAN3;
 use crate::hal::time::Hertz;
+use crate::timer::TimestampTimer;
 use core::num::NonZeroU8;
 use core::num::NonZeroU16;
 use embedded_can::Frame as _;
@@ -56,6 +57,7 @@ const TIMING_DATA: CanBitTimingConst = CanBitTimingConst {
 pub struct UsbCanDevice {
     /// CAN peripheral clock. Used by the host for bit timing calculations.
     clock: Hertz,
+    timestamp_timer: TimestampTimer,
     /// CAN interface labeled "CAN1" on PCB.
     pub can1: Option<FdCan<Can<FDCAN2>, NormalOperationMode>>,
     /// CAN interface labeled "CAN2" on PCB.
@@ -67,9 +69,11 @@ impl UsbCanDevice {
         clock: Hertz,
         can1: FdCan<Can<FDCAN2>, NormalOperationMode>,
         can2: FdCan<Can<FDCAN3>, NormalOperationMode>,
+        timestamp_timer: TimestampTimer,
     ) -> Self {
         Self {
             clock,
+            timestamp_timer,
             can1: Some(can1),
             can2: Some(can2),
         }
@@ -254,14 +258,7 @@ impl Device for UsbCanDevice {
     }
 
     fn timestamp(&self) -> u32 {
-        // both interfaces return the same hardware timer
-        if let Some(can) = self.can1.as_ref() {
-            can.timestamp() as u32
-        } else if let Some(can) = self.can2.as_ref() {
-            can.timestamp() as u32
-        } else {
-            0
-        }
+        self.timestamp_timer.now()
     }
 
     fn receive(&mut self, interface: u8, frame: &usbd_gscan::host::Frame) {

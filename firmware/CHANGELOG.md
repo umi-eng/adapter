@@ -18,6 +18,7 @@
 - Hardware timestamps.
 - Don't sleep in debug mode.
 - Device level class, subclass, and protocol should be `0`.
+- Customer 32-bit timer for hardware timestamps.
 
 ## v0.3.1
 
